@@ -15,7 +15,6 @@ export default function PostList() {
         const data = await res.json();
         if (data.success) {
           setPosts(data.data);
-          console.log(data.data);
         }
       } catch (error) {
         console.error("Lỗi tải posts:", error);

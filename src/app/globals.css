@@ -24,3 +24,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.custom-input-userInfoPage {
+  @apply border rounded-lg px-3 py-2 w-full;
+}

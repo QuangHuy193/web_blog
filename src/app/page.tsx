@@ -1,5 +1,20 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  redirect("/login");
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      router.push("/home");
+    } else {
+      router.push("/login");
+    }
+  }, [router]);
+
+  return <div>Đang kiểm tra đăng nhập...</div>;
 }

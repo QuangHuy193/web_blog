@@ -5,7 +5,6 @@ import { Form, Input, Button, Card } from "antd";
 import Link from "next/link";
 import { notifyError, notifySuccess } from "../../component/Toast";
 import { User } from "@/lib/contains";
-import { json } from "stream/consumers";
 
 export default function LoginPage() {
   const router = useRouter();
