@@ -2,16 +2,14 @@
 "use client";
 import { Avatar, Layout } from "antd";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 const { Header: AntHeader } = Layout;
 
-export default function Header() {
+export default function Header({ setSelectedMenu }) {
   const [user, setUser] = useState(null);
-  const router = useRouter();
 
-  const handleClick = () => {
-    router.push("/userInfo");
+  const handleClick = (menu: string) => {
+    setSelectedMenu(menu);
   };
 
   useEffect(() => {
@@ -27,12 +25,17 @@ export default function Header() {
   return (
     <AntHeader className="!bg-blue-500">
       <div className="flex justify-between items-center h-full w-full">
-        <div className="text-white text-lg font-bold">FaceNotebook</div>
+        <div
+          className="text-white text-lg font-bold cursor-pointer"
+          onClick={() => handleClick("posts")}
+        >
+          FaceNotebook
+        </div>
         <div className="flex items-center gap-3">
           <Avatar src={user?.image} size={40} alt="Ảnh" />
           <span
             className="text-white text-lg font-medium cursor-pointer"
-            onClick={handleClick}
+            onClick={() => handleClick("profile")}
           >
             {user?.username}
           </span>

@@ -74,7 +74,7 @@ export async function POST(req: Request) {
   try {
     const body: Post = await req.json();
 
-    // Chỉ lấy những field cần insert (không insert id, created_at, updated_at vì DB sẽ tự sinh)
+    // Chỉ lấy những field cần insert
     const { content, image, author_id } = body;
 
     // Insert vào DB

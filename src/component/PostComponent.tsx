@@ -18,6 +18,8 @@ import type {
 } from "@/lib/contains";
 import { useState } from "react";
 import Image from "next/image";
+import { notifyError, notifySuccess } from "./Toast";
+import { useForm } from "antd/es/form/Form";
 
 export default function PostComponent({
   id,
@@ -31,6 +33,7 @@ export default function PostComponent({
 }: PostWithExtras) {
   const [reactionList, setReactionList] = useState<Reaction[]>(reactions);
   const [showComments, setShowComments] = useState(false);
+  const [form] = Form.useForm();
 
   // Đếm số lượng reaction theo type
   const reactionCounts = reactionList.reduce<Record<Reaction["type"], number>>(
@@ -52,6 +55,26 @@ export default function PostComponent({
       .join(", ");
   };
 
+  const onFinish = async (values: Comment) => {
+    try {
+      const res = await fetch("/api/comment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        notifyError(data.error || "Không thể đăng bình luận!");
+        return;
+      }
+
+      notifySuccess("Đã đăng bình luận");
+      form.setFieldValue("content", "");
+    } catch (err) {
+      notifyError("Lỗi server");
+    }
+  };
   return (
     <Card className="!mb-4 !shadow">
       <Card.Meta
@@ -154,7 +177,15 @@ export default function PostComponent({
             <p className="text-gray-500">Chưa có bình luận nào.</p>
           )}
 
-          <Form className="mt-3 flex items-center gap-2">
+          <Form
+            form={form}
+            className="mt-3 flex items-center gap-2"
+            onFinish={onFinish}
+            initialValues={{
+              post_id: 4,
+              user_id: 7,
+            }}
+          >
             <Form.Item
               name="content"
               rules={[{ required: true, message: "Vui lòng nhập bình luận!" }]}
@@ -162,6 +193,9 @@ export default function PostComponent({
             >
               <Input placeholder="Nhập bình luận..." />
             </Form.Item>
+            <Form.Item name="post_id" />
+            <Form.Item name="user_id" />
+
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Gửi

@@ -31,10 +31,16 @@ export async function PUT(
 
     delete updatedUser.password;
 
-    return NextResponse.json(updatedUser, { status: 200 });
+    return NextResponse.json<ApiResponse<User>>({
+      success: true,
+      data: updatedUser,
+    });
   } catch (error: unknown) {
+    let message = "Lỗi sửa thông tin";
+    if (error instanceof Error) message = error.message;
+
     return NextResponse.json<ApiResponse<null>>(
-      { success: false, error: "Lỗi sửa thông tin" },
+      { success: false, error: message },
       { status: 500 }
     );
   }
