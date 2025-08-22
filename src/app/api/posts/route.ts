@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     // Insert vào DB
     const result = await query<{ insertId: number }>(
-      "INSERT INTO posts ( content, image, author_id) VALUES ( ?, ?)",
+      "INSERT INTO posts ( content, image, author_id) VALUES ( ?, ?, ?)",
       [content, image, author_id]
     );
 

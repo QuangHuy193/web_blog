@@ -1,6 +1,7 @@
 // components/Header.tsx
 "use client";
-import { Avatar, Layout } from "antd";
+import { menuConfig } from "@/lib/menuConfig";
+import { Avatar, Button, Layout } from "antd";
 import { useEffect, useState } from "react";
 
 const { Header: AntHeader } = Layout;
@@ -23,18 +24,39 @@ export default function Header({ setSelectedMenu }) {
     }
   }, []);
   return (
-    <AntHeader className="!bg-blue-500">
+    <AntHeader className="!bg-blue-500 px-4">
       <div className="flex justify-between items-center h-full w-full">
+        {/* Logo */}
         <div
           className="text-white text-lg font-bold cursor-pointer"
           onClick={() => handleClick("posts")}
         >
           FaceNotebook
         </div>
+
+        {/* Menu giữa */}
+        <div className="hidden md:flex items-center gap-4 justify-center flex-1">
+          {menuConfig.map((menu) => {
+            if (menu.display) {
+              return (
+                <Button
+                  key={menu.key}
+                  type="primary"
+                  className="bg-white text-blue-500 font-medium min-w-[110px]"
+                  onClick={() => handleClick(menu.key)}
+                >
+                  {menu.icon} {menu.label}
+                </Button>
+              );
+            }
+          })}
+        </div>
+
+        {/* Avatar + Username */}
         <div className="flex items-center gap-3">
           <Avatar src={user?.image} size={40} alt="Ảnh" />
           <span
-            className="text-white text-lg font-medium cursor-pointer"
+            className="hidden sm:inline text-white text-lg font-medium cursor-pointer"
             onClick={() => handleClick("profile")}
           >
             {user?.username}

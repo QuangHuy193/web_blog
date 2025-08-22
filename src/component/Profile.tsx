@@ -1,16 +1,28 @@
 "use client";
 import { notifyError, notifySuccess } from "@/component/Toast";
 import { User } from "@/lib/contains";
-import { Avatar, Button, Form, Input, Layout, Space, Typography } from "antd";
+import { LogoutOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Form,
+  Input,
+  Layout,
+  Space,
+  Tooltip,
+  Typography,
+} from "antd";
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 function UserInfo() {
+  const router = useRouter();
   const [user, setUser] = useState("");
   const [formData, setFormData] = useState({});
-
   const [loadingAction, setLoadingAction] = useState({
     //Khi bấm cập nhật
     updateInfo: false,
@@ -144,10 +156,35 @@ function UserInfo() {
     }
   };
 
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Bạn có chắc muốn đăng xuất?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Đăng xuất",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.setItem("user", "");
+        router.push("/login");
+      }
+    });
+  };
+
   return (
     <Layout>
       <Content className="p-6 bg-gray-50 min-h-screen flex justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-3xl">
+        <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-3xl relative ">
+          <Tooltip title={"Đăng xuất"}>
+            <button
+              onClick={handleLogout}
+              className="cursor-pointer absolute top-2 right-2 px-3 py-1 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition"
+            >
+              <LogoutOutlined />
+            </button>
+          </Tooltip>
           {/* Avatar */}
           <div className="flex flex-col items-center mb-6">
             <Avatar src={formData.image || user?.image} size={120} alt="Ảnh" />

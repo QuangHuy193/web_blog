@@ -17,7 +17,7 @@ export default function HomePage() {
       <Header setSelectedMenu={setSelectedMenu} />
       <Content className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-2xl font-bold mb-4">{currentMenu.label || ""}</h1>
-        {currentMenu?.component({ customProp: "demo" })}
+        {currentMenu?.component({ setSelectedMenu: setSelectedMenu })}
       </Content>
     </Layout>
   );
