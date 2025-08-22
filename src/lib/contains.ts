@@ -37,10 +37,8 @@ export interface Reaction {
   created_at: string;
 }
 
-export interface PostWithExtras extends Post {
+export interface PostWithUser extends Post {
   user: Pick<User, "id" | "username" | "image"> | null;
-  comments: CommentWithUser[];
-  reactions: ReactionWithUser[];
 }
 
 export interface CommentWithUser extends Comment {

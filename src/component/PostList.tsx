@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import PostComponent from "./PostComponent";
-import type { PostWithExtras } from "@/lib/contains";
+import type { PostWithUser } from "@/lib/contains";
 
 export default function PostList() {
-  const [posts, setPosts] = useState<PostWithExtras[]>([]);
+  const [posts, setPosts] = useState<PostWithUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function PostList() {
     fetchPosts();
   }, []);
 
-  if (loading) return <p className="text-center">Đang tải bài viết...</p>;
+  if (loading) return <p className="!text-center">Đang tải bài viết...</p>;
 
   return (
     <div className="max-w-2xl mx-auto mt-6">

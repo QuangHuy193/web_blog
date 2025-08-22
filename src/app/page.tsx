@@ -16,5 +16,5 @@ export default function Home() {
     }
   }, [router]);
 
-  return <div>Đang kiểm tra đăng nhập...</div>;
+  return <div className="text-center mt-4">Đang kiểm tra đăng nhập...</div>;
 }

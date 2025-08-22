@@ -1,63 +1,22 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import {
-  Post,
-  Comment,
-  Reaction,
-  ApiResponse,
-  User,
-  PostWithExtras,
-  ReactionWithUser,
-  CommentWithUser,
-} from "@/lib/contains";
+import { Post, ApiResponse, User } from "@/lib/contains";
 
 export async function GET() {
   try {
-    // Lấy toàn bộ bài viết
     const posts = await query<Post[]>(
       "SELECT * FROM posts ORDER BY created_at DESC"
     );
-
-    // Lấy toàn bộ user (để map cho post, comment, reaction)
     const users = await query<User[]>("SELECT id, username, image FROM users");
 
-    // Lấy toàn bộ comment
-    const comments = await query<Comment[]>(
-      "SELECT * FROM comments ORDER BY created_at ASC"
-    );
+    const postsWithUser = posts.map((p) => ({
+      ...p,
+      user: users.find((u) => u.id === p.author_id) || null,
+    }));
 
-    // Lấy toàn bộ reaction
-    const reactions = await query<Reaction[]>("SELECT * FROM reactions");
-
-    // Gộp dữ liệu
-    const postsWithExtras: PostWithExtras[] = posts.map((post) => {
-      const user = users.find((u) => u.id === post.author_id) || null;
-
-      const postComments: CommentWithUser[] = comments
-        .filter((c) => c.post_id === post.id)
-        .map((c) => ({
-          ...c,
-          user: users.find((u) => u.id === c.user_id) || null,
-        }));
-
-      const postReactions: ReactionWithUser[] = reactions
-        .filter((r) => r.post_id === post.id)
-        .map((r) => ({
-          ...r,
-          user: users.find((u) => u.id === r.user_id) || null,
-        }));
-
-      return {
-        ...post,
-        user,
-        comments: postComments,
-        reactions: postReactions,
-      };
-    });
-
-    return NextResponse.json<ApiResponse<typeof postsWithExtras>>({
+    return NextResponse.json<ApiResponse<typeof postsWithUser>>({
       success: true,
-      data: postsWithExtras,
+      data: postsWithUser,
     });
   } catch (error: unknown) {
     let message = "Lỗi server";
