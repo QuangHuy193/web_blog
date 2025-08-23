@@ -5,12 +5,17 @@ import { Form, Input, Button, Card } from "antd";
 import Link from "next/link";
 import { notifyError, notifySuccess } from "../../component/Toast";
 import { User } from "@/lib/contains";
+import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [action, setAction] = useState({
+    login: false,
+  });
 
   const onFinish = async (values: User) => {
     try {
+      setAction((prev) => ({ ...prev, login: true }));
       const res = await fetch("/api/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -28,6 +33,8 @@ export default function LoginPage() {
       router.push("/home");
     } catch (err) {
       notifyError("Lỗi server");
+    } finally {
+      setAction((prev) => ({ ...prev, login: false }));
     }
   };
 
@@ -56,7 +63,7 @@ export default function LoginPage() {
             <Input.Password placeholder="Nhập mật khẩu" />
           </Form.Item>
           <Button type="primary" htmlType="submit" block>
-            Đăng nhập
+            {action.login ? "Đang đăng nhập..." : " Đăng nhập"}
           </Button>
         </Form>
         <p className="mt-3 text-center">

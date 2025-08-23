@@ -34,6 +34,7 @@ export default function PostComponent({
   const [toggleAction, setToggleAction] = useState({
     showComments: false,
     sendComment: false,
+    deleteComment: -1,
   });
   const user_local =
     typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -141,6 +142,29 @@ export default function PostComponent({
       notifyError("Lỗi server");
     } finally {
       setToggleAction((prev) => ({ ...prev, sendComment: false }));
+    }
+  };
+
+  // xóa bình luận
+  const handleDeleteComment = async (id: number) => {
+    try {
+      setToggleAction((prev) => ({ ...prev, deleteComment: id }));
+      const res = await fetch(`/api/comments/${id}`, {
+        method: "DELETE",
+      });
+
+      const deleted = await res.json();
+
+      if (deleted.success) {
+        notifySuccess("Đã xóa bình luận");
+        fetchComments();
+      } else {
+        notifyError(deleted.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setToggleAction((prev) => ({ ...prev, deleteComment: -1 }));
     }
   };
 
@@ -263,6 +287,17 @@ export default function PostComponent({
                 <span className="text-xs text-gray-500">
                   {new Date(c.created_at).toLocaleString()}
                 </span>
+                {currentUser.id === c.user_id && (
+                  <Button
+                    type="link"
+                    className="!text-red-500"
+                    onClick={() => handleDeleteComment(c.id)}
+                  >
+                    {toggleAction.deleteComment === c.id
+                      ? "Đang xóa..."
+                      : "Xóa"}
+                  </Button>
+                )}
               </div>
             </div>
           ))}

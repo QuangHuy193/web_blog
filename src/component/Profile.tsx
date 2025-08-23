@@ -322,7 +322,7 @@ function UserInfo() {
           <div>
             <div className="flex justify-between">
               <Title level={4} className="mb-4">
-                Quân mật khẩu?
+                Quên mật khẩu?
               </Title>
               {loadingAction.showChangePass ? (
                 <Button
