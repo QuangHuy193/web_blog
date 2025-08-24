@@ -34,7 +34,7 @@ function UserInfo() {
     changeImage: false,
   });
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [form] = Form.useForm();
+  const [form, formPassword] = Form.useForm();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -171,6 +171,44 @@ function UserInfo() {
         router.push("/login");
       }
     });
+  };
+
+  const handleChangePass = async (values: any) => {
+    try {
+      if (values.oldPassword === values.newPassword) {
+        notifyError("Mật khẩu mới phải khác mật khẩu cũ");
+        return;
+      }
+      if (values.newPassword !== values.comfirmPassword) {
+        notifyError("Mật khẩu nhập lại không chính xác!");
+        return;
+      }
+
+      const user_local = localStorage.getItem("user");
+      const user = user_local ? JSON.parse(user_local) : null;
+
+      setLoadingAction((prev) => ({ ...prev, changePassword: true }));
+
+      const { comfirmPassword, ...data } = values;
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const isChanged = await res.json();
+      if (isChanged.success) {
+        notifySuccess("Đổi mật khẩu thành công, vui lòng đăng nhập lại");
+        router.push("/login");
+      } else {
+        notifyError(isChanged.error);
+      }
+    } catch (error) {
+      console.log(error.message);
+      notifyError("Có lỗi xảy ra, vui lòng thử lại!");
+    } finally {
+      setLoadingAction((prev) => ({ ...prev, changePassword: false }));
+    }
   };
 
   return (
@@ -353,18 +391,46 @@ function UserInfo() {
             </div>
 
             {loadingAction.showChangePass && (
-              <Form layout="vertical">
-                <Form.Item label="Mật khẩu hiện tại">
+              <Form
+                layout="vertical"
+                form={formPassword}
+                onFinish={handleChangePass}
+              >
+                <Form.Item
+                  label="Mật khẩu hiện tại"
+                  name="oldPassword"
+                  rules={[
+                    { required: true, message: "vui lòng nhập mật khẩu cũ" },
+                    { min: 8, message: "Mật khẩu tối thiểu 8 kí tự" },
+                  ]}
+                >
                   <Input.Password className="custom-input-userInfoPage" />
                 </Form.Item>
-                <Form.Item label="Mật khẩu mới">
+                <Form.Item
+                  label="Mật khẩu mới"
+                  name="newPassword"
+                  rules={[
+                    { required: true, message: "vui lòng nhập mật khẩu mới" },
+                    { min: 8, message: "Mật khẩu tối thiểu 8 kí tự" },
+                  ]}
+                >
                   <Input.Password className="custom-input-userInfoPage" />
                 </Form.Item>
-                <Form.Item label="Xác nhận mật khẩu mới">
+                <Form.Item
+                  label="Xác nhận mật khẩu mới"
+                  name="comfirmPassword"
+                  rules={[
+                    {
+                      required: true,
+                      message: "vui lòng xác nhận mật khẩu mới",
+                    },
+                    { min: 8, message: "Mật khẩu tối thiểu 8 kí tự" },
+                  ]}
+                >
                   <Input.Password className="custom-input-userInfoPage" />
                 </Form.Item>
                 <div className="flex justify-end">
-                  <Button type="primary" danger>
+                  <Button type="primary" danger htmlType="submit">
                     {loadingAction.changePassword
                       ? "Đang cập nhật..."
                       : "Đổi mật khẩu"}
