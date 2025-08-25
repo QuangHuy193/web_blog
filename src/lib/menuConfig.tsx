@@ -11,6 +11,7 @@ interface MenuItem {
   label: string;
   icon?: ReactNode;
   display: boolean;
+  isMobile: boolean;
   component: (props?: any) => ReactNode; // function component để truyền props được
 }
 
@@ -20,6 +21,7 @@ export const menuConfig: MenuItem[] = [
     label: "Bảng tin",
     icon: <HomeOutlined />,
     display: true,
+    isMobile: true,
     component: (props) => <PostList {...props} />,
   },
   {
@@ -27,6 +29,7 @@ export const menuConfig: MenuItem[] = [
     label: "Thông tin cá nhân",
     icon: <UserOutlined />,
     display: false,
+    isMobile: true,
     component: (props) => <Profile {...props} />,
   },
   {
@@ -34,6 +37,7 @@ export const menuConfig: MenuItem[] = [
     label: "Tạo bài viết",
     icon: <EditOutlined />,
     display: true,
+    isMobile: true,
     component: (props) => <CreatePost {...props} />,
   },
   //   {

@@ -70,7 +70,6 @@ function CreatePost({ setSelectedMenu }) {
 
   return (
     <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow">
-      <h2 className="text-xl font-semibold mb-4">Tạo bài viết mới</h2>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         {/* Nội dung bài viết */}
         <Form.Item

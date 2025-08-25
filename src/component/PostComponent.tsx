@@ -1,15 +1,7 @@
 "use client";
 
 import { Card, Avatar, Button, Tooltip, Form, Input } from "antd";
-import {
-  LikeOutlined,
-  SmileOutlined,
-  HeartOutlined,
-  MehOutlined,
-  FrownOutlined,
-  ThunderboltOutlined,
-  CommentOutlined,
-} from "@ant-design/icons";
+import { CommentOutlined } from "@ant-design/icons";
 import type {
   Comment,
   CommentWithUser,
@@ -20,6 +12,8 @@ import type {
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { notifyError, notifySuccess } from "./Toast";
+import { showAlert } from "@/lib/alert";
+import { reactionConfig } from "@/lib/reactionConfig";
 
 export default function PostComponent({
   id,
@@ -147,24 +141,34 @@ export default function PostComponent({
 
   // xóa bình luận
   const handleDeleteComment = async (id: number) => {
-    try {
-      setToggleAction((prev) => ({ ...prev, deleteComment: id }));
-      const res = await fetch(`/api/comments/${id}`, {
-        method: "DELETE",
-      });
+    const result = await showAlert({
+      title: "Bạn có chắc muốn xóa bình luận này?",
+      icon: "warning",
+      confirmButtonText: "Có",
+      cancelButtonText: "Hủy",
+    });
 
-      const deleted = await res.json();
+    if (result.isConfirmed) {
+      try {
+        setToggleAction((prev) => ({ ...prev, deleteComment: id }));
 
-      if (deleted.success) {
-        notifySuccess("Đã xóa bình luận");
-        fetchComments();
-      } else {
-        notifyError(deleted.message);
+        const res = await fetch(`/api/comments/${id}`, {
+          method: "DELETE",
+        });
+
+        const deleted = await res.json();
+
+        if (deleted.success) {
+          notifySuccess("Đã xóa bình luận");
+          fetchComments();
+        } else {
+          notifyError(deleted.message);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setToggleAction((prev) => ({ ...prev, deleteComment: -1 }));
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setToggleAction((prev) => ({ ...prev, deleteComment: -1 }));
     }
   };
 
@@ -193,78 +197,22 @@ export default function PostComponent({
       )}
 
       {/* Hiển thị reactions */}
-      <div className="flex gap-2 mt-3">
-        <Tooltip title={getReactionUsernames("like") || "Chưa có ai"}>
-          <Button
-            icon={<LikeOutlined />}
-            type={userReacted("like") ? "primary" : "text"}
-            onClick={() => {
-              handleReaction("like");
-            }}
-          >
-            {reactionCounts.like}
-          </Button>
-        </Tooltip>
-
-        <Tooltip title={getReactionUsernames("love") || "Chưa có ai"}>
-          <Button
-            icon={<HeartOutlined />}
-            type={userReacted("love") ? "primary" : "text"}
-            onClick={() => {
-              handleReaction("love");
-            }}
-          >
-            {reactionCounts.love}
-          </Button>
-        </Tooltip>
-
-        <Tooltip title={getReactionUsernames("haha") || "Chưa có ai"}>
-          <Button
-            icon={<SmileOutlined />}
-            type={userReacted("haha") ? "primary" : "text"}
-            onClick={() => {
-              handleReaction("haha");
-            }}
-          >
-            {reactionCounts.haha}
-          </Button>
-        </Tooltip>
-
-        <Tooltip title={getReactionUsernames("wow") || "Chưa có ai"}>
-          <Button
-            icon={<ThunderboltOutlined />}
-            type={userReacted("wow") ? "primary" : "text"}
-            onClick={() => {
-              handleReaction("wow");
-            }}
-          >
-            {reactionCounts.wow}
-          </Button>
-        </Tooltip>
-
-        <Tooltip title={getReactionUsernames("sad") || "Chưa có ai"}>
-          <Button
-            icon={<FrownOutlined />}
-            type={userReacted("sad") ? "primary" : "text"}
-            onClick={() => {
-              handleReaction("sad");
-            }}
-          >
-            {reactionCounts.sad}
-          </Button>
-        </Tooltip>
-
-        <Tooltip title={getReactionUsernames("angry") || "Chưa có ai"}>
-          <Button
-            icon={<MehOutlined />}
-            type={userReacted("angry") ? "primary" : "text"}
-            onClick={() => {
-              handleReaction("angry");
-            }}
-          >
-            {reactionCounts.angry}
-          </Button>
-        </Tooltip>
+      <div className="flex flex-wrap gap-2 mt-3">
+        {Object.entries(reactionConfig).map(([key, { icon, color }]) => (
+          <Tooltip key={key} title={getReactionUsernames(key) || "Chưa có ai"}>
+            <Button
+              icon={icon}
+              style={{
+                color: userReacted(key) ? "white" : "black",
+                backgroundColor: userReacted(key) ? color : undefined,
+              }}
+              // type="primary"
+              onClick={() => handleReaction(key)}
+            >
+              {reactionCounts[key] || 0}
+            </Button>
+          </Tooltip>
+        ))}
 
         {/* Comment count */}
         <Button
@@ -277,13 +225,14 @@ export default function PostComponent({
       </div>
 
       {toggleAction.showComments && (
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 space-y-3 ">
           {comments.map((c) => (
             <div key={c.id} className="flex items-start gap-2">
-              <Avatar src={c.user?.image} size={36} />
-              <div>
+              <Avatar className="flex-shrink-0" src={c.user?.image} size={36} />
+
+              <div className="flex-1 min-w-0">
                 <p className="font-semibold">{c.user?.username}</p>
-                <p>{c.content}</p>
+                <p className="break-words max-w-[700px]">{c.content}</p>
                 <span className="text-xs text-gray-500">
                   {new Date(c.created_at).toLocaleString()}
                 </span>

@@ -15,6 +15,7 @@ import {
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { showAlert } from "@/lib/alert";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -156,21 +157,19 @@ function UserInfo() {
     }
   };
 
-  const handleLogout = () => {
-    Swal.fire({
+  const handleLogout = async () => {
+    const result = await showAlert({
       title: "Bạn có chắc muốn đăng xuất?",
       icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
       confirmButtonText: "Đăng xuất",
       cancelButtonText: "Hủy",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        localStorage.setItem("user", "");
-        router.push("/login");
-      }
     });
+
+    if (result.isConfirmed) {
+      localStorage.setItem("user", "");
+      router.push("/login");
+      notifySuccess("Đăng xuất thành công");
+    }
   };
 
   const handleChangePass = async (values: any) => {
@@ -358,14 +357,14 @@ function UserInfo() {
 
           {/* Đổi mật khẩu */}
           <div>
-            <div className="flex justify-between">
+            <div className="flex flex-wrap justify-between">
               <Title level={4} className="mb-4">
                 Quên mật khẩu?
               </Title>
               {loadingAction.showChangePass ? (
                 <Button
                   type="link"
-                  className="!text-red-600"
+                  className="!text-red-600 !p-0"
                   onClick={() =>
                     setLoadingAction((prev) => ({
                       ...prev,
@@ -378,6 +377,7 @@ function UserInfo() {
               ) : (
                 <Button
                   type="link"
+                  className="!p-0"
                   onClick={() =>
                     setLoadingAction((prev) => ({
                       ...prev,
