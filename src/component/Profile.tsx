@@ -12,7 +12,6 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { showAlert } from "@/lib/alert";

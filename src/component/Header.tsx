@@ -3,27 +3,15 @@
 import { menuConfig } from "@/lib/menuConfig";
 import { MenuOutlined } from "@ant-design/icons";
 import { Avatar, Button, Layout } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MenuMobile from "./MenuMobile";
 
 const { Header: AntHeader } = Layout;
 
-export default function Header({ setSelectedMenu }) {
-  const [user, setUser] = useState(null);
+export default function Header({ setSelectedMenu, user }) {
   const [action, setAction] = useState({
     showMenuMobile: false,
   });
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Lỗi parse user:", err);
-      }
-    }
-  }, []);
 
   const handleChangePage = (menu: string, isClose: boolean = false) => {
     setSelectedMenu(menu);

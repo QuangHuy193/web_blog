@@ -1,9 +1,15 @@
 import { ReactNode } from "react";
-import { HomeOutlined, UserOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  HomeOutlined,
+  UserOutlined,
+  EditOutlined,
+  ProfileOutlined,
+} from "@ant-design/icons";
 
 import PostList from "@/component/PostList";
 import Profile from "@/component/Profile";
 import CreatePost from "@/component/CreatePost";
+import MyPost from "@/component/MyPost";
 // import Settings from "@/component/Settings";
 
 interface MenuItem {
@@ -39,6 +45,14 @@ export const menuConfig: MenuItem[] = [
     display: true,
     isMobile: true,
     component: (props) => <CreatePost {...props} />,
+  },
+  {
+    key: "myPost",
+    label: "Bài viết của tôi",
+    icon: <ProfileOutlined />,
+    display: true,
+    isMobile: true,
+    component: (props) => <MyPost {...props} />,
   },
   //   {
   //     key: "settings",

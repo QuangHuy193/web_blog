@@ -4,19 +4,15 @@ import { Form, Input, Button, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { notifyError, notifySuccess } from "./Toast";
 
-function CreatePost({ setSelectedMenu }) {
+function CreatePost({ setSelectedMenu, user, post }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
-
-      // Lấy user từ localStorage
-      const user_local = localStorage.getItem("user");
-      if (user_local) {
-        const u = JSON.parse(user_local); // parse chứ không stringify
-        values.author_id = u.id;
+      if (user) {
+        values.author_id = user.id;
       }
 
       // Lấy file ảnh từ Antd Upload
