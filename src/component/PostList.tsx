@@ -5,11 +5,12 @@ import PostComponent from "./PostComponent";
 import type { PostWithUser } from "@/lib/contains";
 import { Button } from "antd";
 
-export default function PostList() {
+export default function PostList({ userId }) {
   const [posts, setPosts] = useState<PostWithUser[]>([]);
   const [action, setAction] = useState({
     loadingFirstPosts: true,
     loadingPosts: false,
+    fetchAgainPosts: false,
   });
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -17,17 +18,35 @@ export default function PostList() {
 
   async function fetchPosts(pageNumber: number) {
     try {
-      const res = await fetch(`/api/posts?page=${pageNumber}&limit=${limit}`);
-      const data = await res.json();
-      if (data.success) {
-        if (pageNumber === 1) {
-          setPosts(data.data);
-        } else {
-          setPosts((prev) => [...prev, ...data.data]);
+      if (!userId) {
+        const res = await fetch(`/api/posts?page=${pageNumber}&limit=${limit}`);
+        const data = await res.json();
+        if (data.success) {
+          if (pageNumber === 1) {
+            setPosts(data.data);
+          } else {
+            setPosts((prev) => [...prev, ...data.data]);
+          }
+          // Nếu ít hơn limit thì coi như hết
+          if (data.data.length < limit) {
+            setHasMore(false);
+          }
         }
-        // Nếu ít hơn limit thì coi như hết
-        if (data.data.length < limit) {
-          setHasMore(false);
+      } else {
+        const res = await fetch(
+          `/api/posts/${userId}?page=${pageNumber}&limit=${limit}`
+        );
+        const data = await res.json();
+        if (data.success) {
+          if (pageNumber === 1) {
+            setPosts(data.data);
+          } else {
+            setPosts((prev) => [...prev, ...data.data]);
+          }
+          // Nếu ít hơn limit thì coi như hết
+          if (data.data.length < limit) {
+            setHasMore(false);
+          }
         }
       }
     } catch (error) {
@@ -40,7 +59,7 @@ export default function PostList() {
 
   useEffect(() => {
     fetchPosts(1);
-  }, []);
+  }, [userId, action.fetchAgainPosts]);
 
   if (action.loadingFirstPosts)
     return <p className="!text-center">Đang tải bài viết...</p>;
@@ -48,7 +67,12 @@ export default function PostList() {
   return (
     <div className="max-w-2xl mx-auto mt-6">
       {posts.map((post) => (
-        <PostComponent key={post.id} {...post} />
+        <PostComponent
+          key={post.id}
+          {...post}
+          userId={userId}
+          setAction={setAction}
+        />
       ))}
       <div className="flex justify-center">
         {hasMore && (

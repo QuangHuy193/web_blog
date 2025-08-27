@@ -10,6 +10,7 @@ const { Content } = Layout;
 export default function HomePage() {
   const [selectedMenu, setSelectedMenu] = useState("posts");
   const [user, setUser] = useState("");
+  const [userId, setUserId] = useState("");
 
   const currentMenu = menuConfig.find((item) => item.key === selectedMenu);
 
@@ -23,12 +24,17 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <Header setSelectedMenu={setSelectedMenu} user={user} />
+      <Header
+        setSelectedMenu={setSelectedMenu}
+        user={user}
+        setUserId={setUserId}
+      />
       <Content className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-2xl font-bold mb-4">{currentMenu.label || ""}</h1>
         {currentMenu?.component({
           setSelectedMenu: setSelectedMenu,
           user: user,
+          userId: userId,
         })}
       </Content>
     </Layout>

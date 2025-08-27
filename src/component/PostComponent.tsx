@@ -21,7 +21,9 @@ export default function PostComponent({
   image,
   user,
   created_at,
-}: PostWithUser) {
+  userId,
+  setAction,
+}) {
   const [form] = Form.useForm();
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [reactions, setReactions] = useState<ReactionWithUser[]>([]);
@@ -180,21 +182,78 @@ export default function PostComponent({
     }
   };
 
+  //xóa bài viết
+  const handleDeletePost = async (id) => {
+    const result = await showAlert({
+      text: "Bạn chắc chắn muốn xóa bài viết này?",
+      icon: "warning",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    });
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/posts/${id}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          notifySuccess(data.message);
+          setAction((prev) => ({
+            ...prev,
+            fetchAgainPosts: !prev.fetchAgainPosts,
+          }));
+        } else {
+          console.log(data.error);
+          notifyError("Đã có lỗi xảy ra, vui lòng thử lại!");
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    }
+  };
+
+  //sửa bài viết
+  const handleEditPost = async (id) => {
+    console.log(id);
+  };
+
   return (
     <Card className="!mb-4 !shadow">
-      <Card.Meta
-        avatar={<Avatar src={user?.image} size={48} alt={user?.username} />}
-        title={user?.username}
-        description={new Date(created_at).toLocaleString()}
-      />
+      <div className="flex justify-between">
+        <div>
+          <Card.Meta
+            avatar={<Avatar src={user?.image} size={48} alt={user?.username} />}
+            title={user?.username}
+            description={new Date(created_at).toLocaleString()}
+          />
 
-      <p className="mt-2">{content}</p>
+          <p className="mt-2">{content}</p>
 
-      {image && (
-        <div className="mt-3">
-          <Image src={image} alt="Post image" width={800} height={400} />
+          {image && (
+            <div className="mt-3">
+              <Image src={image} alt="Post image" width={800} height={400} />
+            </div>
+          )}
         </div>
-      )}
+
+        {userId && (
+          <div className="flex gap-2">
+            <Button type="primary" onClick={() => handleEditPost(id)}>
+              Sửa
+            </Button>
+            <Button
+              className="!bg-red-500 !text-white"
+              onClick={() => handleDeletePost(id)}
+            >
+              Xóa
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Hiển thị reactions */}
       <div className="flex flex-wrap gap-2 mt-3">

@@ -52,12 +52,6 @@ export const menuConfig: MenuItem[] = [
     icon: <ProfileOutlined />,
     display: true,
     isMobile: true,
-    component: (props) => <MyPost {...props} />,
+    component: (props) => <PostList {...props} />,
   },
-  //   {
-  //     key: "settings",
-  //     label: "Cài đặt",
-  //     icon: <SettingOutlined />,
-  //     component: (props) => <Settings {...props} />,
-  //   },
 ];

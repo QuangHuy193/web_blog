@@ -8,12 +8,17 @@ import MenuMobile from "./MenuMobile";
 
 const { Header: AntHeader } = Layout;
 
-export default function Header({ setSelectedMenu, user }) {
+export default function Header({ setSelectedMenu, user, setUserId }) {
   const [action, setAction] = useState({
     showMenuMobile: false,
   });
 
   const handleChangePage = (menu: string, isClose: boolean = false) => {
+    if (menu === "myPost") {
+      setUserId(user.id);
+    } else {
+      setUserId("");
+    }
     setSelectedMenu(menu);
     if (isClose) {
       handleCloseMenuMobile();
