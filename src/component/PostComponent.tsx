@@ -1,11 +1,10 @@
 "use client";
 
 import { Card, Avatar, Button, Tooltip, Form, Input } from "antd";
-import { CommentOutlined } from "@ant-design/icons";
+import { CommentOutlined, MoreOutlined } from "@ant-design/icons";
 import type {
   Comment,
   CommentWithUser,
-  PostWithUser,
   Reaction,
   ReactionWithUser,
 } from "@/lib/contains";
@@ -14,6 +13,8 @@ import Image from "next/image";
 import { notifyError, notifySuccess } from "./Toast";
 import { showAlert } from "@/lib/alert";
 import { reactionConfig } from "@/lib/reactionConfig";
+import Tippy from "@tippyjs/react";
+import CustomMenu from "./CustomMenu";
 
 export default function PostComponent({
   id,
@@ -241,17 +242,18 @@ export default function PostComponent({
         </div>
 
         {userId && (
-          <div className="flex gap-2">
-            <Button type="primary" onClick={() => handleEditPost(id)}>
-              Sửa
-            </Button>
-            <Button
-              className="!bg-red-500 !text-white"
-              onClick={() => handleDeletePost(id)}
-            >
-              Xóa
-            </Button>
-          </div>
+          <CustomMenu
+            items={[
+              {
+                label: "✏️ Sửa",
+                action: () => handleEditPost(id),
+              },
+              {
+                label: "🗑️ Xóa",
+                action: () => handleDeletePost(id),
+              },
+            ]}
+          />
         )}
       </div>
 
