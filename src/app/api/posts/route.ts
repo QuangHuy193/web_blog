@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const offset = (page - 1) * limit;
 
     const posts = await query<Post[]>(
-      `SELECT * FROM posts ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`
+      `SELECT * FROM posts where deleted = 0 ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`
     );
 
     const users = await query<User[]>("SELECT id, username, image FROM users");

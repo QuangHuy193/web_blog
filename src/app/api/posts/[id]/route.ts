@@ -16,7 +16,7 @@ export async function GET(
     const offset = (page - 1) * limit;
 
     const posts = await query<Post[]>(
-      `SELECT * FROM posts where author_id = ${id} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset} `
+      `SELECT * FROM posts where deleted = 0 and author_id = ${id} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset} `
     );
 
     const users = await query<User[]>(
@@ -60,11 +60,49 @@ export async function DELETE(
       );
     }
 
-    await query<Post[]>("DELETE FROM posts WHERE id = ?", [postId]);
+    await query<Post[]>("UPDATE posts SET deleted = 1 WHERE id = ?", [postId]);
 
     return NextResponse.json<ApiResponse<null>>({
       success: true,
       message: "Đã xóa bài viết",
+    });
+  } catch (error: unknown) {
+    let message = "Lỗi server";
+    if (error instanceof Error) message = error.message;
+    console.error("API /posts error:", error);
+
+    return NextResponse.json<ApiResponse<null>>(
+      { success: false, error: message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const { content, image } = body;
+
+    const postId = Number(id);
+    if (isNaN(postId)) {
+      return NextResponse.json<ApiResponse<null>>(
+        { success: false, error: "ID không hợp lệ" },
+        { status: 400 }
+      );
+    }
+
+    await query<Post[]>(
+      "UPDATE posts SET content = ?, image = ?, updated_at = NOW() WHERE id = ?",
+      [content, image, postId]
+    );
+
+    return NextResponse.json<ApiResponse<null>>({
+      success: true,
+      message: "Đã sửa bài viết",
     });
   } catch (error: unknown) {
     let message = "Lỗi server";

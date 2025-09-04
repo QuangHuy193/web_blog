@@ -9,6 +9,7 @@ const { Content } = Layout;
 
 export default function HomePage() {
   const [selectedMenu, setSelectedMenu] = useState("posts");
+  const [editingPost, setEditingPost] = useState(null);
   const [user, setUser] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -35,6 +36,8 @@ export default function HomePage() {
           setSelectedMenu: setSelectedMenu,
           user: user,
           userId: userId,
+          editingPost: editingPost,
+          setEditingPost: setEditingPost,
         })}
       </Content>
     </Layout>

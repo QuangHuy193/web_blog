@@ -1,22 +1,41 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Input, Button, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { notifyError, notifySuccess } from "./Toast";
 
-function CreatePost({ setSelectedMenu, user, post }) {
+function CreatePost({ setSelectedMenu, user, editingPost }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (editingPost) {
+      form.setFieldsValue({
+        content: editingPost.content,
+        image: editingPost.image
+          ? [
+              {
+                uid: "-1",
+                name: "image.png",
+                url: editingPost.image,
+              },
+            ]
+          : [],
+      });
+    }
+  }, [editingPost, form]);
 
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
+
       if (user) {
         values.author_id = user.id;
       }
 
       // Lấy file ảnh từ Antd Upload
       const file = values.image?.[0]?.originFileObj;
+
       if (file) {
         // Upload ảnh lên server
         const formDataUpload = new FormData();
@@ -37,23 +56,41 @@ function CreatePost({ setSelectedMenu, user, post }) {
           return;
         }
       } else {
-        values.image = "";
+        if (!editingPost) {
+          values.image = "";
+        } else {
+          values.image = editingPost.image;
+        }
       }
 
-      // Gửi dữ liệu bài post
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      const data = await res.json();
-      //   console.log(data.data);
+      if (editingPost) {
+        const res = await fetch(`/api/posts/${editingPost.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        const data = await res.json();
 
-      if (data.success) {
-        notifySuccess("Đăng bài thành công");
-        form.resetFields();
+        if (data.success) {
+          notifySuccess("Cập nhật bài viết thành công");
+          form.resetFields();
+        } else {
+          notifyError("Không thể cập nhật bài viết!");
+        }
       } else {
-        notifyError("Không thể đăng bài viết!");
+        const res = await fetch("/api/posts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          notifySuccess("Đăng bài thành công");
+          form.resetFields();
+        } else {
+          notifyError("Không thể đăng bài viết!");
+        }
       }
     } catch (error) {
       console.error(error);
@@ -116,7 +153,7 @@ function CreatePost({ setSelectedMenu, user, post }) {
             loading={loading}
             className="bg-blue-500"
           >
-            Đăng bài viết
+            {editingPost ? "Cập nhật bài viết" : "Đăng bài viết"}
           </Button>
         </Form.Item>
       </Form>

@@ -13,7 +13,6 @@ import Image from "next/image";
 import { notifyError, notifySuccess } from "./Toast";
 import { showAlert } from "@/lib/alert";
 import { reactionConfig } from "@/lib/reactionConfig";
-import Tippy from "@tippyjs/react";
 import CustomMenu from "./CustomMenu";
 
 export default function PostComponent({
@@ -24,7 +23,10 @@ export default function PostComponent({
   created_at,
   userId,
   setAction,
+  setSelectedMenu,
+  setEditingPost,
 }) {
+  const post = { id, content, image };
   const [form] = Form.useForm();
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [reactions, setReactions] = useState<ReactionWithUser[]>([]);
@@ -218,8 +220,9 @@ export default function PostComponent({
   };
 
   //sửa bài viết
-  const handleEditPost = async (id) => {
-    console.log(id);
+  const handleEditPost = async (post) => {
+    setEditingPost(post);
+    setSelectedMenu("editPost");
   };
 
   return (
@@ -246,13 +249,14 @@ export default function PostComponent({
             items={[
               {
                 label: "✏️ Sửa",
-                action: () => handleEditPost(id),
+                action: () => handleEditPost(post),
               },
               {
                 label: "🗑️ Xóa",
                 action: () => handleDeletePost(id),
               },
             ]}
+            isClick={true}
           />
         )}
       </div>

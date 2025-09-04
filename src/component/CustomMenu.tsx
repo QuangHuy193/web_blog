@@ -44,7 +44,7 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
               item.action?.();
             }
           }}
-          className="flex items-center gap-2 text-left hover:bg-gray-100 hover:text-black p-2 rounded "
+          className="flex items-center gap-2 text-left hover:bg-gray-100 hover:text-black hover:cursor-pointer p-2 rounded "
         >
           {item.icon && <span>{item.icon}</span>}
           <span>{item.label}</span>

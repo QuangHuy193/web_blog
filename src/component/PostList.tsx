@@ -5,7 +5,7 @@ import PostComponent from "./PostComponent";
 import type { PostWithUser } from "@/lib/contains";
 import { Button } from "antd";
 
-export default function PostList({ userId }) {
+export default function PostList({ userId, setSelectedMenu, setEditingPost }) {
   const [posts, setPosts] = useState<PostWithUser[]>([]);
   const [action, setAction] = useState({
     loadingFirstPosts: true,
@@ -72,6 +72,8 @@ export default function PostList({ userId }) {
           {...post}
           userId={userId}
           setAction={setAction}
+          setSelectedMenu={setSelectedMenu}
+          setEditingPost={setEditingPost}
         />
       ))}
       <div className="flex justify-center">

@@ -9,8 +9,6 @@ import {
 import PostList from "@/component/PostList";
 import Profile from "@/component/Profile";
 import CreatePost from "@/component/CreatePost";
-import MyPost from "@/component/MyPost";
-// import Settings from "@/component/Settings";
 
 interface MenuItem {
   key: string;
@@ -53,5 +51,13 @@ export const menuConfig: MenuItem[] = [
     display: true,
     isMobile: true,
     component: (props) => <PostList {...props} />,
+  },
+  {
+    key: "editPost",
+    label: "Chỉnh sửa bài viết",
+    icon: <ProfileOutlined />,
+    display: false,
+    isMobile: false,
+    component: (props) => <CreatePost {...props} />,
   },
 ];
