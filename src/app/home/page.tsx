@@ -4,6 +4,7 @@ import { Layout } from "antd";
 import Header from "@/component/Header";
 import { useEffect, useState } from "react";
 import { menuConfig } from "@/lib/menuConfig";
+import { CaretUpOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 
@@ -12,6 +13,7 @@ export default function HomePage() {
   const [editingPost, setEditingPost] = useState(null);
   const [user, setUser] = useState("");
   const [userId, setUserId] = useState("");
+  const [showGoTop, setShowGoTop] = useState(false);
 
   const currentMenu = menuConfig.find((item) => item.key === selectedMenu);
 
@@ -22,6 +24,26 @@ export default function HomePage() {
       setUser(JSON.parse(u_local));
     }
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setShowGoTop(true);
+      } else {
+        setShowGoTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleGoTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <Layout>
@@ -37,9 +59,18 @@ export default function HomePage() {
           user: user,
           userId: userId,
           editingPost: editingPost,
+          selectedMenu: selectedMenu,
           setEditingPost: setEditingPost,
         })}
       </Content>
+      {showGoTop && (
+        <div
+          className="cursor-pointer flex justify-center rounded-full w-10 h-10 bg-blue-400 fixed right-3 bottom-3"
+          onClick={handleGoTop}
+        >
+          <CaretUpOutlined className="text-3xl" />
+        </div>
+      )}
     </Layout>
   );
 }

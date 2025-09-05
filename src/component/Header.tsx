@@ -14,7 +14,7 @@ export default function Header({ setSelectedMenu, user, setUserId }) {
   });
 
   const handleChangePage = (menu: string, isClose: boolean = false) => {
-    if (menu === "myPost") {
+    if (menu === "myPost" || menu === "deletedPost") {
       setUserId(user.id);
     } else {
       setUserId("");

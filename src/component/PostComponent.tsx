@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Avatar, Button, Tooltip, Form, Input } from "antd";
-import { CommentOutlined, MoreOutlined } from "@ant-design/icons";
+import { CommentOutlined } from "@ant-design/icons";
 import type {
   Comment,
   CommentWithUser,
@@ -21,8 +21,10 @@ export default function PostComponent({
   image,
   user,
   created_at,
+  updated_at,
   userId,
   setAction,
+  selectedMenu,
   setSelectedMenu,
   setEditingPost,
 }) {
@@ -220,9 +222,43 @@ export default function PostComponent({
   };
 
   //sửa bài viết
-  const handleEditPost = async (post) => {
+  const handleEditPost = (post) => {
     setEditingPost(post);
     setSelectedMenu("editPost");
+  };
+
+  //khôi phục bài viết
+  const handleRecoverPost = async (id) => {
+    const result = await showAlert({
+      text: "Bạn chắc chắn muốn khôi phục bài viết này?",
+      icon: "warning",
+      confirmButtonText: "Có",
+      cancelButtonText: "Hủy",
+    });
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/posts/recover/${id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          notifySuccess("Đã khôi phục bài viết");
+          setAction((prev) => ({
+            ...prev,
+            fetchAgainPosts: !prev.fetchAgainPosts,
+          }));
+        } else {
+          console.log(data.error);
+          notifyError("Đã có lỗi xảy ra, vui lòng thử lại!");
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    }
   };
 
   return (
@@ -232,7 +268,15 @@ export default function PostComponent({
           <Card.Meta
             avatar={<Avatar src={user?.image} size={48} alt={user?.username} />}
             title={user?.username}
-            description={new Date(created_at).toLocaleString()}
+            description={
+              <>
+                {new Date(created_at).toLocaleString()}
+
+                {created_at !== updated_at && (
+                  <span className="text-gray-500 italic"> (đã chỉnh sửa)</span>
+                )}
+              </>
+            }
           />
 
           <p className="mt-2">{content}</p>
@@ -244,7 +288,7 @@ export default function PostComponent({
           )}
         </div>
 
-        {userId && (
+        {selectedMenu === "myPost" && (
           <CustomMenu
             items={[
               {
@@ -254,6 +298,18 @@ export default function PostComponent({
               {
                 label: "🗑️ Xóa",
                 action: () => handleDeletePost(id),
+              },
+            ]}
+            isClick={true}
+          />
+        )}
+
+        {selectedMenu === "deletedPost" && (
+          <CustomMenu
+            items={[
+              {
+                label: "↩️ Khôi phục",
+                action: () => handleRecoverPost(id),
               },
             ]}
             isClick={true}

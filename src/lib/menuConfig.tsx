@@ -4,6 +4,7 @@ import {
   UserOutlined,
   EditOutlined,
   ProfileOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 
 import PostList from "@/component/PostList";
@@ -59,5 +60,13 @@ export const menuConfig: MenuItem[] = [
     display: false,
     isMobile: false,
     component: (props) => <CreatePost {...props} />,
+  },
+  {
+    key: "deletedPost",
+    label: "Bài viết đã xóa",
+    icon: <DeleteOutlined />,
+    display: true,
+    isMobile: true,
+    component: (props) => <PostList {...props} />,
   },
 ];
