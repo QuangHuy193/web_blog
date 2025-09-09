@@ -18,6 +18,7 @@ function AdminPage() {
     if (!menu) return <h1>404 - Không tìm thấy trang</h1>;
 
     const Component = menu.component;
+
     if (menu.isLoading) {
       return <Component setIsLoading={setIsLoading} />;
     }
@@ -29,7 +30,7 @@ function AdminPage() {
     <>
       <Layout style={{ minHeight: "100vh" }}>
         <div className="fixed top-0 left-0 right-0 z-100">
-          <Header />
+          <Header onMenuClick={(key) => setMenuKey(key)} />
         </div>
 
         <div className="fixed top-[64px] left-0 bottom-0 w-[200px] z-99 bg-[#fff] shadow-[2px_0_8px_rgba(0,0,0,0.1)]">

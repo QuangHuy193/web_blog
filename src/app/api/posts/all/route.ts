@@ -16,6 +16,10 @@ export async function GET(req: Request) {
 
     const users = await query<User[]>("SELECT id, username, image FROM users");
 
+    // lấy tổng số
+    const totalResult = await query(`SELECT COUNT(*) AS total FROM posts`);
+    const total = totalResult[0].total;
+
     const postsWithUser = posts.map((p) => ({
       ...p,
       user: users.find((u) => u.id === p.author_id) || null,
@@ -24,6 +28,7 @@ export async function GET(req: Request) {
     return NextResponse.json<ApiResponse<typeof postsWithUser>>({
       success: true,
       data: postsWithUser,
+      total: total,
     });
   } catch (error: unknown) {
     let message = "Lỗi server";

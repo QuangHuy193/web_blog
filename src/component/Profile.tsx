@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { showAlert } from "@/lib/alert";
+import LoadingToast from "./LoadingToast";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -32,6 +33,8 @@ function UserInfo() {
     showChangePass: false,
     //khi sửa ảnh
     changeImage: false,
+    //khi đăng xuất
+    logout: false,
   });
   const [editingField, setEditingField] = useState<string | null>(null);
   const [form, formPassword] = Form.useForm();
@@ -165,8 +168,9 @@ function UserInfo() {
     });
 
     if (result.isConfirmed) {
+      setLoadingAction((prev) => ({ ...prev, logout: true }));
       localStorage.setItem("user", "");
-      router.push("/login");
+      await router.push("/login");
       notifySuccess("Đăng xuất thành công");
     }
   };
@@ -212,6 +216,7 @@ function UserInfo() {
   return (
     <Layout>
       <Content className="p-6 bg-gray-50 min-h-screen flex justify-center">
+        {loadingAction.logout && <LoadingToast title="Đang đăng xuất..." />}
         <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-3xl relative ">
           <Tooltip title={"Đăng xuất"}>
             <button

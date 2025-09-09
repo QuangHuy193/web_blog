@@ -22,7 +22,7 @@ export default function Sidebar({ onMenuClick }) {
           borderRight: 0,
         }}
         onClick={({ key }) => onMenuClick && onMenuClick(key)}
-        items={sidebarMenuItems}
+        items={sidebarMenuItems.filter((item) => item.display)}
       />
     </Sider>
   );

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notifyError, notifySuccess } from "../../component/Toast";
 import { User } from "@/lib/interface";
 import { useState } from "react";
+import LoadingToast from "@/component/LoadingToast";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,9 +32,9 @@ export default function LoginPage() {
       notifySuccess("Đăng nhập thành công");
       localStorage.setItem("user", JSON.stringify(data.data));
       if (data.data.role === "user") {
-        router.push("/home");
+        await router.push("/home");
       } else if (data.data.role === "admin") {
-        router.push("/admin");
+        await router.push("/admin");
       }
     } catch (err) {
       notifyError("Lỗi server");
@@ -44,6 +45,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
+      {action.login && <LoadingToast title="Đang đăng nhập..." />}
       <Card title="Đăng nhập" className="w-96 shadow-lg rounded-xl">
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item

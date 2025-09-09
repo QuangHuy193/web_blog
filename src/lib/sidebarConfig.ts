@@ -1,4 +1,6 @@
 import StaticPost from "@/component/admin/StaticPost";
+import StaticUser from "@/component/admin/StaticUser";
+import Profile from "@/component/Profile";
 
 export const sidebarMenuItems = [
   {
@@ -6,6 +8,23 @@ export const sidebarMenuItems = [
     icon: "",
     label: "Bài viết",
     component: StaticPost,
+    display: true,
+    isLoading: true,
+  },
+  {
+    key: "profile",
+    icon: "",
+    label: "",
+    component: Profile,
+    display: false,
+    isLoading: true,
+  },
+  {
+    key: "users",
+    icon: "",
+    label: "Người dùng",
+    component: StaticUser,
+    display: true,
     isLoading: true,
   },
 ];
