@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { User, ApiResponse } from "@/lib/contains";
+import { User, ApiResponse } from "@/lib/interface";
 
 // 📌 Đăng ký
 export async function POST(req: Request) {

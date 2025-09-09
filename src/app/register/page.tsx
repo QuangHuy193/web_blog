@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card } from "antd";
 import Link from "next/link";
 import { notifyError, notifySuccess } from "../../component/Toast";
-import { User } from "@/lib/contains";
+import { User } from "@/lib/interface";
 
 export default function RegisterPage() {
   const router = useRouter();

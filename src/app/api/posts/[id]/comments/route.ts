@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import { Comment, ApiResponse, User } from "@/lib/contains";
+import { Comment, ApiResponse, User } from "@/lib/interface";
 import { NextResponse } from "next/server";
 
 export async function GET(

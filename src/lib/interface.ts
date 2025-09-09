@@ -6,6 +6,7 @@ export interface User {
   password?: string;
   image?: string;
   role: "user" | "admin"; // phân quyền
+  status: string;
   created_at: string;
 }
 
@@ -17,6 +18,8 @@ export interface Post {
   image?: string;
   created_at: string;
   updated_at?: string;
+  deleted: boolean;
+  hidden: boolean;
 }
 
 // Comment

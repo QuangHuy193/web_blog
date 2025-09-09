@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { ApiResponse } from "@/lib/contains";
+import { ApiResponse } from "@/lib/interface";
 
 export async function POST(
   req: Request,

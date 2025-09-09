@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { Post, ApiResponse } from "@/lib/contains";
+import { Post, ApiResponse } from "@/lib/interface";
 
 export async function POST(
   req: Request,

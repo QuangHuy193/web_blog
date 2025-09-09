@@ -7,13 +7,14 @@ import type {
   CommentWithUser,
   Reaction,
   ReactionWithUser,
-} from "@/lib/contains";
+} from "@/lib/interface";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { notifyError, notifySuccess } from "./Toast";
 import { showAlert } from "@/lib/alert";
 import { reactionConfig } from "@/lib/reactionConfig";
 import CustomMenu from "./CustomMenu";
+import { fetchComments, fetchReactions } from "@/lib/function";
 
 export default function PostComponent({
   id,
@@ -22,7 +23,6 @@ export default function PostComponent({
   user,
   created_at,
   updated_at,
-  userId,
   setAction,
   selectedMenu,
   setSelectedMenu,
@@ -48,29 +48,9 @@ export default function PostComponent({
   };
   // 🔹 Load comments + reactions khi component mount
   useEffect(() => {
-    fetchComments();
-    fetchReactions();
+    fetchComments(id, setComments);
+    fetchReactions(id, setReactions);
   }, [id]);
-
-  const fetchComments = async () => {
-    try {
-      const res = await fetch(`/api/posts/${id}/comments`);
-      const data = await res.json();
-      if (data.success) setComments(data.data);
-    } catch (err) {
-      console.error("Lỗi tải comments:", err);
-    }
-  };
-
-  const fetchReactions = async () => {
-    try {
-      const res = await fetch(`/api/posts/${id}/reactions`);
-      const data = await res.json();
-      if (data.success) setReactions(data.data);
-    } catch (err) {
-      console.error("Lỗi tải reactions:", err);
-    }
-  };
 
   // 🔹 Đếm số lượng reaction theo type
   const reactionCounts = reactions.reduce<Record<Reaction["type"], number>>(

@@ -1,6 +1,6 @@
 "use client";
 import { notifyError, notifySuccess } from "@/component/Toast";
-import { User } from "@/lib/contains";
+import { User } from "@/lib/interface";
 import { LogoutOutlined } from "@ant-design/icons";
 import {
   Avatar,

@@ -1,4 +1,4 @@
-import { ApiResponse, Comment } from "@/lib/contains";
+import { ApiResponse, Comment } from "@/lib/interface";
 import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 

@@ -10,7 +10,13 @@ export default function Home() {
     const user = localStorage.getItem("user");
 
     if (user) {
-      router.push("/home");
+      const u = JSON.parse(user);
+
+      if (u.role === "admin") {
+        router.push("/admin");
+      } else if (u.role === "user") {
+        router.push("/home");
+      }
     } else {
       router.push("/login");
     }

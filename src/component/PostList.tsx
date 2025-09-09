@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PostComponent from "./PostComponent";
-import type { PostWithUser } from "@/lib/contains";
+import type { PostWithUser } from "@/lib/interface";
 import { Button } from "antd";
 import LoadingToast from "./LoadingToast";
 
@@ -87,7 +87,7 @@ export default function PostList({
 
   return (
     <div className="max-w-2xl mx-auto mt-6">
-      {posts.length === 0 && (
+      {!action.loadingPosts && posts.length === 0 && (
         <div className="flex justify-center items-center py-10 text-gray-500 text-lg font-medium">
           <span className="px-4 py-2 bg-gray-100 rounded-lg shadow-sm">
             😢 Không có bài viết thuộc mục này rồi
@@ -99,7 +99,6 @@ export default function PostList({
         <PostComponent
           key={post.id}
           {...post}
-          userId={userId}
           setAction={setAction}
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
@@ -107,7 +106,7 @@ export default function PostList({
         />
       ))}
       <div className="flex justify-center">
-        {hasMore && (
+        {!action.loadingPosts && hasMore && (
           <Button
             onClick={() => {
               setAction((prev) => ({ ...prev, loadingMorePosts: true }));

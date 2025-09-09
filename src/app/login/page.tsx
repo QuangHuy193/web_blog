@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card } from "antd";
 import Link from "next/link";
 import { notifyError, notifySuccess } from "../../component/Toast";
-import { User } from "@/lib/contains";
+import { User } from "@/lib/interface";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -30,7 +30,11 @@ export default function LoginPage() {
 
       notifySuccess("Đăng nhập thành công");
       localStorage.setItem("user", JSON.stringify(data.data));
-      router.push("/home");
+      if (data.data.role === "user") {
+        router.push("/home");
+      } else if (data.data.role === "admin") {
+        router.push("/admin");
+      }
     } catch (err) {
       notifyError("Lỗi server");
     } finally {
