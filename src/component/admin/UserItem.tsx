@@ -15,11 +15,9 @@ function UserItem({ id, username, email, image, role, status, created_at }) {
       </div>
 
       <div className="w-28 text-center">
-        {status === "active" ? (
-          <Tag color="green">Hoạt động</Tag>
-        ) : (
-          <Tag color="red">Khóa</Tag>
-        )}
+        {status === "active" && <Tag color="green">Hoạt động</Tag>}
+
+        {status === "blocked" && <Tag color="red">Khóa</Tag>}
       </div>
       <div className="mr-3">
         {role !== "admin" && (

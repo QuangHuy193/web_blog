@@ -9,8 +9,7 @@ function PostItem({
   image,
   created_at,
   updated_at,
-  deleted,
-  hidden,
+  status,
   user,
 }) {
   const [comments, setComments] = useState<CommentWithUser[]>([]);
@@ -46,11 +45,11 @@ function PostItem({
 
           {/* Trạng thái & Stats */}
           <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-            {deleted === 1 && (
+            {status === "deleted" && (
               <span className="italic text-red-500">🗑️ Đã bị xóa</span>
             )}
-            {deleted === 0 && hidden === 1 && (
-              <span className="italic text-gray-500">⚠️ Đã bị ẩn</span>
+            {status === "blocked" && (
+              <span className="italic text-gray-500">⚠️ Đã bị khóa</span>
             )}
             <span>💬 {comments.length}</span>
             <span>👍 {reactions.length}</span>
@@ -65,19 +64,14 @@ function PostItem({
         )}
 
         <div className="flex flex-col gap-3 p-4 ">
-          {(deleted === 1 || hidden === 1) && (
+          {status === "blocked" && (
             <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer">
-              🔄 Khôi phục
+              🔓 Mở khóa
             </button>
           )}
-          {deleted === 0 && (
-            <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition cursor-pointer">
-              🗑️ Xóa
-            </button>
-          )}
-          {hidden === 0 && (
+          {status === "active" && (
             <button className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition cursor-pointer">
-              👁️‍🗨️ Ẩn
+              🔒 Khóa
             </button>
           )}
           {}

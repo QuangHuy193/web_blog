@@ -39,11 +39,8 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
       )}
       {menuItems.map((item, idx) => {
         const itemStyle =
-          variant === "notifi"
-            ? item.status === "new"
-              ? "bg-[#444] text-white font-medium hover:bg-[#555]" // thông báo mới
-              : "text-gray-300 hover:bg-[#444] hover:text-white" // đã xem
-            : "hover:bg-gray-100 hover:text-black";
+          variant === "notifi" && item.status === "seen" ? "text-gray-500" : ""; // thông báo cũ
+
         return (
           <button
             key={idx}
@@ -54,10 +51,11 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
                 item.action?.();
               }
             }}
-            className={`flex items-center gap-2 text-left hover:cursor-pointer p-2 rounded ${itemStyle}`}
+            className={`text-black flex items-center justify-between gap-2 text-left hover:bg-gray-100 hover:cursor-pointer p-2 rounded ${itemStyle}`}
           >
             {item.icon && <span>{item.icon}</span>}
             <span>{item.label}</span>
+            {item.status === "new" && <span className="text-blue-400">●</span>}
           </button>
         );
       })}

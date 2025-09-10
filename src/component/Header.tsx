@@ -105,7 +105,16 @@ export default function Header({ setSelectedMenu, user, setUserId }) {
                 action: () => hanlleNotification(noti.id),
               }))}
               variant="notifi"
-              triggerIcon={<div className="text-2xl">🔔</div>}
+              triggerIcon={
+                <div className="relative">
+                  <div className=" text-2xl">🔔</div>
+                  {notifications.some((noti) => noti.status === "new") && (
+                    <span className="text-red-500 absolute bottom-0 right-0">
+                      ●
+                    </span>
+                  )}
+                </div>
+              }
               isClick={true}
             />
           ) : (

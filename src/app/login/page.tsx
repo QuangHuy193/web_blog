@@ -38,8 +38,6 @@ export default function LoginPage() {
       //notifySuccess("Đăng nhập thành công");
     } catch (err) {
       notifyError("Lỗi server");
-    } finally {
-      setAction((prev) => ({ ...prev, login: false }));
     }
   };
 
