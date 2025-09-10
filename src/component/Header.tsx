@@ -3,15 +3,41 @@
 import { menuConfig } from "@/lib/menuConfig";
 import { MenuOutlined } from "@ant-design/icons";
 import { Avatar, Button, Layout } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MenuMobile from "./MenuMobile";
+import CustomMenu from "./CustomMenu";
 
 const { Header: AntHeader } = Layout;
 
 export default function Header({ setSelectedMenu, user, setUserId }) {
+  const [notifications, setNotifications] = useState([]);
   const [action, setAction] = useState({
     showMenuMobile: false,
   });
+
+  const fetchNotification = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const res = await fetch(`/api/notifications/${user.id}`);
+      const data = await res.json();
+      if (data.success) {
+        setNotifications(data.data);
+        console.log(data.data);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotification();
+  }, []);
+
+  const hanlleNotification = (id) => {
+    console.log("đã xem thông báo có id là ", id);
+  };
 
   const handleChangePage = (menu: string, isClose: boolean = false) => {
     if (menu === "myPost" || menu === "deletedPost") {
@@ -71,6 +97,25 @@ export default function Header({ setSelectedMenu, user, setUserId }) {
           >
             {user?.username}
           </span>
+          {notifications ? (
+            <CustomMenu
+              items={notifications.map((noti) => ({
+                label: noti.content,
+                status: noti.status,
+                action: () => hanlleNotification(noti.id),
+              }))}
+              variant="notifi"
+              triggerIcon={<div className="text-2xl">🔔</div>}
+              isClick={true}
+            />
+          ) : (
+            <CustomMenu
+              items={[{ label: "Bạn không có thông báo nào" }]}
+              variant="notifi"
+              triggerIcon={<div className="text-2xl">🔔</div>}
+              isClick={true}
+            />
+          )}
         </div>
 
         <div className="block md:hidden">

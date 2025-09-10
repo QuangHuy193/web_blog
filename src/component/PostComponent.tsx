@@ -21,6 +21,7 @@ export default function PostComponent({
   content,
   image,
   user,
+  status,
   created_at,
   updated_at,
   setAction,
@@ -85,7 +86,7 @@ export default function PostComponent({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      fetchReactions();
+      fetchReactions(id, setReactions);
     } catch (err) {
       console.error("Lỗi tải reactions:", err);
     }
@@ -118,7 +119,7 @@ export default function PostComponent({
       form.setFieldValue("content", "");
 
       // 🔹 Refresh comments
-      fetchComments();
+      fetchComments(id, setComments);
     } catch (err) {
       notifyError("Lỗi server");
     } finally {
@@ -147,7 +148,7 @@ export default function PostComponent({
 
         if (deleted.success) {
           notifySuccess("Đã xóa bình luận");
-          fetchComments();
+          fetchComments(id, setComments);
         } else {
           notifyError(deleted.message);
         }
@@ -165,6 +166,10 @@ export default function PostComponent({
     } else {
       setToggleAction((prev) => ({ ...prev, showComments: true }));
     }
+  };
+
+  const handleSendRequestUnlock = (id) => {
+    console.log(`Yêu cầu mở khóa bài viết có id là ${id}`);
   };
 
   //xóa bài viết
@@ -244,7 +249,12 @@ export default function PostComponent({
   return (
     <Card className="!mb-4 !shadow">
       <div className="flex justify-between">
-        <div>
+        <div className="w-full">
+          {status === "blocked" && (
+            <div className="flex justify-center text-yellow-300 italic text-xl mb-2.5">
+              ⚠️ Bài viết đã bị quản trị viên chặn khỏi bảng tin
+            </div>
+          )}
           <Card.Meta
             avatar={<Avatar src={user?.image} size={48} alt={user?.username} />}
             title={user?.username}
@@ -259,16 +269,22 @@ export default function PostComponent({
             }
           />
 
-          <p className="mt-2">{content}</p>
+          <p className="mt-2 break-words w-full">{content}</p>
 
           {image && (
             <div className="mt-3">
-              <Image src={image} alt="Post image" width={800} height={400} />
+              <Image
+                src={image}
+                alt="Post image"
+                width={500}
+                height={200}
+                className="w-full h-auto rounded-md"
+              />
             </div>
           )}
         </div>
 
-        {selectedMenu === "myPost" && (
+        {selectedMenu === "myPost" && status !== "blocked" && (
           <CustomMenu
             items={[
               {
@@ -278,6 +294,18 @@ export default function PostComponent({
               {
                 label: "🗑️ Xóa",
                 action: () => handleDeletePost(id),
+              },
+            ]}
+            isClick={true}
+          />
+        )}
+
+        {selectedMenu === "myPost" && status === "blocked" && (
+          <CustomMenu
+            items={[
+              {
+                label: "🔓 Yêu cầu mở khóa",
+                action: () => handleSendRequestUnlock(id),
               },
             ]}
             isClick={true}
@@ -355,26 +383,29 @@ export default function PostComponent({
           {comments.length === 0 && (
             <p className="text-gray-500">Chưa có bình luận nào.</p>
           )}
-
-          <Form
-            form={form}
-            className="mt-3 flex items-center gap-2"
-            onFinish={onFinish}
-          >
-            <Form.Item
-              name="content"
-              rules={[{ required: true, message: "Vui lòng nhập bình luận!" }]}
-              className="flex-1"
+          {selectedMenu !== "deletedPost" && (
+            <Form
+              form={form}
+              className="mt-3 flex items-center gap-2"
+              onFinish={onFinish}
             >
-              <Input placeholder="Nhập bình luận..." />
-            </Form.Item>
+              <Form.Item
+                name="content"
+                rules={[
+                  { required: true, message: "Vui lòng nhập bình luận!" },
+                ]}
+                className="flex-1"
+              >
+                <Input placeholder="Nhập bình luận..." />
+              </Form.Item>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                {toggleAction.sendComment ? "Đang gửi..." : "Gửi"}
-              </Button>
-            </Form.Item>
-          </Form>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  {toggleAction.sendComment ? "Đang gửi..." : "Gửi"}
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
         </div>
       )}
     </Card>

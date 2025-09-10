@@ -29,13 +29,13 @@ export default function LoginPage() {
         return;
       }
 
-      notifySuccess("Đăng nhập thành công");
       localStorage.setItem("user", JSON.stringify(data.data));
       if (data.data.role === "user") {
         await router.push("/home");
       } else if (data.data.role === "admin") {
         await router.push("/admin");
       }
+      //notifySuccess("Đăng nhập thành công");
     } catch (err) {
       notifyError("Lỗi server");
     } finally {

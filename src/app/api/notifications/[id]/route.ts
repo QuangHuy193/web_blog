@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { ApiResponse, Notification } from "@/lib/interface";
 import { query } from "@/lib/db";
-import { Post, ApiResponse } from "@/lib/interface";
+import { NextResponse } from "next/server";
 
+//lấy thông báo theo user_id
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
@@ -9,18 +10,18 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const posts = await query<Post[]>(
-      `SELECT * FROM posts where status = 'deleted' and author_id = ${id} ORDER BY created_at DESC`
+    const notification = await query<Notification[]>(
+      `SELECT * FROM notification ORDER BY created_at DESC`
     );
 
-    return NextResponse.json<ApiResponse<typeof posts>>({
+    return NextResponse.json<ApiResponse<typeof notification>>({
       success: true,
-      data: posts,
+      data: notification,
     });
   } catch (error: unknown) {
     let message = "Lỗi server";
     if (error instanceof Error) message = error.message;
-    console.error("API /posts error:", error);
+    console.error("API /notification error:", error);
 
     return NextResponse.json<ApiResponse<null>>(
       { success: false, error: message },

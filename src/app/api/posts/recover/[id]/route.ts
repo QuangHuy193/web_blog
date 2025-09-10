@@ -10,7 +10,7 @@ export async function POST(
     const { id } = await params;
 
     const posts = await query<Post[]>(
-      `UPDATE posts SET deleted = 0 where id = ${id}`
+      `UPDATE posts SET status = 'active' where id = ${id}`
     );
 
     return NextResponse.json<ApiResponse<typeof posts>>({

@@ -28,3 +28,16 @@ body {
 .custom-input-userInfoPage {
   @apply border rounded-lg px-3 py-2 w-full;
 }
+
+.tippy-box {
+  background: lab(96.54% 0.01 -0.01) !important;
+}
+
+.tippy-content {
+  background: #f5f5f5 !important;
+  border-radius: 8px !important;
+}
+
+.tippy-arrow {
+  color: #f5f5f5 !important;
+}

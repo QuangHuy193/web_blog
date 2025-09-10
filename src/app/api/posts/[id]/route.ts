@@ -16,7 +16,7 @@ export async function GET(
     const offset = (page - 1) * limit;
 
     const posts = await query<Post[]>(
-      `SELECT * FROM posts where deleted = 0 and author_id = ${id} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset} `
+      `SELECT * FROM posts where status <> 'deleted' and author_id = ${id} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset} `
     );
 
     const users = await query<User[]>(
@@ -60,7 +60,9 @@ export async function DELETE(
       );
     }
 
-    await query<Post[]>("UPDATE posts SET deleted = 1 WHERE id = ?", [postId]);
+    await query<Post[]>("UPDATE posts SET status = 'deleted' WHERE id = ?", [
+      postId,
+    ]);
 
     return NextResponse.json<ApiResponse<null>>({
       success: true,

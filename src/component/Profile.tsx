@@ -171,7 +171,7 @@ function UserInfo() {
       setLoadingAction((prev) => ({ ...prev, logout: true }));
       localStorage.setItem("user", "");
       await router.push("/login");
-      notifySuccess("Đăng xuất thành công");
+      //notifySuccess("Đăng xuất thành công");
     }
   };
 

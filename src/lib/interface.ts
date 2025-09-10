@@ -40,6 +40,16 @@ export interface Reaction {
   created_at: string;
 }
 
+//thông báo
+export interface Notification {
+  id: number;
+  sender_id: number;
+  recipient_id: number;
+  content: string;
+  status: string;
+  created_at: string;
+}
+
 export interface PostWithUser extends Post {
   user: Pick<User, "id" | "username" | "image"> | null;
 }
