@@ -14,7 +14,7 @@ function StaticUser() {
   const fetchUser = async () => {
     try {
       setAction((prve) => ({ ...prve, loadingUsers: true }));
-      const res = await fetch(`/api/users??page=${page}&limit=${limit}`);
+      const res = await fetch(`/api/admin/users?page=${page}&limit=${limit}`);
       const data = await res.json();
       if (data.success) {
         setUsers(data.data);

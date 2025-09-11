@@ -12,6 +12,7 @@ export default function HomePage() {
   const [selectedMenu, setSelectedMenu] = useState("posts");
   const [editingPost, setEditingPost] = useState(null);
   const [user, setUser] = useState("");
+  const [token, setToken] = useState("");
   const [userId, setUserId] = useState("");
   const [showGoTop, setShowGoTop] = useState(false);
 
@@ -19,9 +20,14 @@ export default function HomePage() {
 
   useEffect(() => {
     const u_local = localStorage.getItem("user");
+    const t_local = localStorage.getItem("token");
 
     if (u_local) {
       setUser(JSON.parse(u_local));
+    }
+
+    if (t_local) {
+      setToken(t_local);
     }
   }, []);
 
@@ -47,21 +53,27 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <Header
-        setSelectedMenu={setSelectedMenu}
-        user={user}
-        setUserId={setUserId}
-      />
+      {token && (
+        <Header
+          setSelectedMenu={setSelectedMenu}
+          user={user}
+          setUserId={setUserId}
+          token={token}
+        />
+      )}
+
       <Content className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-2xl font-bold mb-4">{currentMenu.label || ""}</h1>
-        {currentMenu?.component({
-          setSelectedMenu: setSelectedMenu,
-          user: user,
-          userId: userId,
-          editingPost: editingPost,
-          selectedMenu: selectedMenu,
-          setEditingPost: setEditingPost,
-        })}
+        {token &&
+          currentMenu?.component({
+            setSelectedMenu: setSelectedMenu,
+            user: user,
+            userId: userId,
+            editingPost: editingPost,
+            selectedMenu: selectedMenu,
+            setEditingPost: setEditingPost,
+            token: token,
+          })}
       </Content>
       {showGoTop && (
         <div

@@ -20,7 +20,7 @@ import LoadingToast from "./LoadingToast";
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
-function UserInfo() {
+function UserInfo({ token }) {
   const router = useRouter();
   const [user, setUser] = useState("");
   const [formData, setFormData] = useState({});
@@ -87,6 +87,9 @@ function UserInfo() {
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formDataUpload,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await res.json();
@@ -111,6 +114,9 @@ function UserInfo() {
       try {
         await fetch(`/api/upload/?path=${encodeURIComponent(formData.image)}`, {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
       } catch (err) {
         console.error("Không xóa được ảnh tạm:", err);
@@ -131,7 +137,10 @@ function UserInfo() {
       // Gọi API PUT với dữ liệu trong formData
       const res = await fetch(`/api/users/info/${user?.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
       });
 
@@ -170,6 +179,7 @@ function UserInfo() {
     if (result.isConfirmed) {
       setLoadingAction((prev) => ({ ...prev, logout: true }));
       localStorage.setItem("user", "");
+      localStorage.setItem("token", "");
       await router.push("/login");
       //notifySuccess("Đăng xuất thành công");
     }
@@ -194,14 +204,19 @@ function UserInfo() {
       const { comfirmPassword, ...data } = values;
       const res = await fetch(`/api/users/${user.id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(data),
       });
 
       const isChanged = await res.json();
       if (isChanged.success) {
-        notifySuccess("Đổi mật khẩu thành công, vui lòng đăng nhập lại");
         router.push("/login");
+        localStorage.setItem("user", "");
+        localStorage.setItem("token", "");
+        notifySuccess("Đổi mật khẩu thành công, vui lòng đăng nhập lại");
       } else {
         notifyError(isChanged.error);
       }

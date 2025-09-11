@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { User, ApiResponse } from "@/lib/interface";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 // 📌 Đăng ký
 export async function POST(req: Request) {
@@ -98,42 +101,21 @@ export async function PUT(req: Request) {
     // Không trả mật khẩu về client
     delete user.password;
 
+    // Tạo token
+    const token = jwt.sign(
+      { id: user.id, role: user.role }, // payload
+      JWT_SECRET,
+      { expiresIn: "2h" } // thời hạn 2h
+    );
+    console.log("Generated token:", token);
     return NextResponse.json<ApiResponse<User>>({
       success: true,
       data: user,
+      token: token,
     });
   } catch (error: unknown) {
     let message = "Lỗi server";
     if (error instanceof Error) message = error.message;
-
-    return NextResponse.json<ApiResponse<null>>(
-      { success: false, error: message },
-      { status: 500 }
-    );
-  }
-}
-
-// lấy trừ admin
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-
-    const limit = parseInt(searchParams.get("limit") || "8", 10);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const offset = (page - 1) * limit;
-
-    const users = await query<User[]>(
-      `SELECT id, username, email, image, role, status, created_at FROM users where role <> 'admin' ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`
-    );
-
-    return NextResponse.json<ApiResponse<typeof users>>({
-      success: true,
-      data: users,
-    });
-  } catch (error: unknown) {
-    let message = "Lỗi server";
-    if (error instanceof Error) message = error.message;
-    console.error("API /posts error:", error);
 
     return NextResponse.json<ApiResponse<null>>(
       { success: false, error: message },

@@ -4,7 +4,7 @@ import { Form, Input, Button, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { notifyError, notifySuccess } from "./Toast";
 
-function CreatePost({ setSelectedMenu, user, editingPost }) {
+function CreatePost({ setSelectedMenu, user, editingPost, token }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -43,11 +43,13 @@ function CreatePost({ setSelectedMenu, user, editingPost }) {
 
         const resImage = await fetch("/api/upload", {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formDataUpload,
         });
 
         const dataImage = await resImage.json();
-        //   console.log(dataImage.data);
         if (dataImage.success) {
           // Gán lại giá trị image cho post (chỉ lưu link/path thôi)
           values.image = dataImage.filePath;
@@ -66,7 +68,10 @@ function CreatePost({ setSelectedMenu, user, editingPost }) {
       if (editingPost) {
         const res = await fetch(`/api/posts/${editingPost.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(values),
         });
         const data = await res.json();
@@ -80,7 +85,10 @@ function CreatePost({ setSelectedMenu, user, editingPost }) {
       } else {
         const res = await fetch("/api/posts", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(values),
         });
         const data = await res.json();

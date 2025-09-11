@@ -21,6 +21,7 @@ export default function PostComponent({
   content,
   image,
   user,
+  token,
   status,
   created_at,
   updated_at,
@@ -83,7 +84,10 @@ export default function PostComponent({
       values.type = type;
       const res = await fetch(`/api/reactions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(values),
       });
       fetchReactions(id, setReactions);
@@ -105,7 +109,10 @@ export default function PostComponent({
 
       const res = await fetch(`/api/comments`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(values),
       });
       const data = await res.json();
@@ -142,6 +149,9 @@ export default function PostComponent({
 
         const res = await fetch(`/api/comments/${id}`, {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const deleted = await res.json();
@@ -184,7 +194,10 @@ export default function PostComponent({
       try {
         const res = await fetch(`/api/posts/${id}`, {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const data = await res.json();
@@ -224,7 +237,10 @@ export default function PostComponent({
       try {
         const res = await fetch(`/api/posts/recover/${id}`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const data = await res.json();

@@ -8,6 +8,7 @@ import LoadingToast from "./LoadingToast";
 
 export default function PostList({
   userId,
+  token,
   selectedMenu,
   setSelectedMenu,
   setEditingPost,
@@ -26,7 +27,14 @@ export default function PostList({
     try {
       setAction((prev) => ({ ...prev, loadingPosts: true }));
       if (selectedMenu === "posts") {
-        const res = await fetch(`/api/posts?page=${pageNumber}&limit=${limit}`);
+        const res = await fetch(
+          `/api/posts?page=${pageNumber}&limit=${limit}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await res.json();
         if (data.success) {
           if (pageNumber === 1) {
@@ -40,9 +48,13 @@ export default function PostList({
           }
         }
       } else if (selectedMenu === "deletedPost") {
-        console.log(userId);
         const res = await fetch(
-          `/api/posts/delete/${userId}?page=${pageNumber}&limit=${limit}`
+          `/api/posts/delete/${userId}?page=${pageNumber}&limit=${limit}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         const data = await res.json();
         if (data.success) {
@@ -58,7 +70,12 @@ export default function PostList({
         }
       } else {
         const res = await fetch(
-          `/api/posts/${userId}?page=${pageNumber}&limit=${limit}`
+          `/api/posts/${userId}?page=${pageNumber}&limit=${limit}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         const data = await res.json();
         if (data.success) {
@@ -103,6 +120,7 @@ export default function PostList({
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
           setEditingPost={setEditingPost}
+          token={token}
         />
       ))}
       <div className="flex justify-center">

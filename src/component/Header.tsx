@@ -9,7 +9,7 @@ import CustomMenu from "./CustomMenu";
 
 const { Header: AntHeader } = Layout;
 
-export default function Header({ setSelectedMenu, user, setUserId }) {
+export default function Header({ setSelectedMenu, user, setUserId, token }) {
   const [notifications, setNotifications] = useState([]);
   const [action, setAction] = useState({
     showMenuMobile: false,
@@ -18,11 +18,14 @@ export default function Header({ setSelectedMenu, user, setUserId }) {
   const fetchNotification = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const res = await fetch(`/api/notifications/${user.id}`);
+      const res = await fetch(`/api/notifications/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.json();
       if (data.success) {
         setNotifications(data.data);
-        console.log(data.data);
       } else {
         console.log(data.message);
       }

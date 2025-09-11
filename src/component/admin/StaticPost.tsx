@@ -17,7 +17,7 @@ function StaticPost() {
   const fetchPosts = async () => {
     try {
       setAction((prve) => ({ ...prve, loadingPosts: true }));
-      const res = await fetch(`/api/posts/all?page=${page}&limit=${limit}`);
+      const res = await fetch(`/api/admin/posts?page=${page}&limit=${limit}`);
       const data = await res.json();
       if (data.success) {
         setPosts(data.data);
