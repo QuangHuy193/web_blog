@@ -2,6 +2,8 @@ import { CommentWithUser, ReactionWithUser } from "@/lib/interface";
 import { useEffect, useState } from "react";
 import { Card, Avatar, Image } from "antd";
 import { fetchComments, fetchReactions } from "@/lib/function";
+import { showAlert } from "@/lib/alert";
+import FormChooseReason from "./FormChooseReason";
 
 function PostItem({
   id,
@@ -11,20 +13,47 @@ function PostItem({
   updated_at,
   status,
   user,
+  token,
+  setRefreshPost,
 }) {
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [reactions, setReactions] = useState<ReactionWithUser[]>([]);
+  const [action, setAction] = useState({
+    showFormReason: false,
+    loadingBlockPost: false,
+  });
 
   useEffect(() => {
     fetchComments(id, setComments);
     fetchReactions(id, setReactions);
   }, [id]);
 
+  const handleBlockPost = async (id) => {
+    const alert = await showAlert({
+      text: "Bạn chắc chắn muốn khóa bài viết này?",
+      icon: "warning",
+      confirmButtonText: "Có",
+    });
+
+    if (alert.isConfirmed) {
+      setAction((prev) => ({ ...prev, showFormReason: true }));
+    }
+  };
+
   return (
     <Card
       key={id}
       className="w-full !mb-4 shadow-sm hover:shadow-md transition-all"
     >
+      {action.showFormReason && (
+        <FormChooseReason
+          setAction={setAction}
+          id={id}
+          author_id={user.id}
+          token={token}
+          setRefreshPost={setRefreshPost}
+        />
+      )}
       <div className="flex items-center-safe gap-4">
         {/* Avatar user */}
         <Avatar src={user?.image} size={48}>
@@ -51,6 +80,10 @@ function PostItem({
             {status === "blocked" && (
               <span className="italic text-gray-500">⚠️ Đã bị khóa</span>
             )}
+
+            {status === "active" && (
+              <span className="italic text-green-500">● Hoạt động</span>
+            )}
             <span>💬 {comments.length}</span>
             <span>👍 {reactions.length}</span>
           </div>
@@ -70,8 +103,13 @@ function PostItem({
             </button>
           )}
           {status === "active" && (
-            <button className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition cursor-pointer">
-              🔒 Khóa
+            <button
+              onClick={() => {
+                handleBlockPost(id);
+              }}
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition cursor-pointer"
+            >
+              {action.loadingBlockPost ? "Đang khóa..." : " 🔒 Khóa "}
             </button>
           )}
           {}

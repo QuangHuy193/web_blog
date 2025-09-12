@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout } from "antd";
 
 import Header from "@/component/admin/Header";
@@ -11,19 +11,27 @@ const { Content } = Layout;
 
 function AdminPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState("");
   const [menuKey, setMenuKey] = useState("posts");
 
-  const renderContent = () => {
+  useEffect(() => {
+    const token_local = localStorage.getItem("token");
+    if (token_local) {
+      setToken(token_local);
+    }
+  }, []);
+
+  const renderContent = (token: string) => {
     const menu = sidebarMenuItems.find((item) => item.key === menuKey);
     if (!menu) return <h1>404 - Không tìm thấy trang</h1>;
 
     const Component = menu.component;
 
     if (menu.isLoading) {
-      return <Component setIsLoading={setIsLoading} />;
+      return <Component setIsLoading={setIsLoading} token={token} />;
     }
 
-    return <Component />;
+    return <Component token={token} />;
   };
 
   return (
@@ -46,7 +54,7 @@ function AdminPage() {
               minHeight: "100%",
             }}
           >
-            {renderContent()}
+            {renderContent(token)}
           </Content>
         </Layout>
       </Layout>

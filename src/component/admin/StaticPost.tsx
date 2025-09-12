@@ -5,12 +5,13 @@ import LoadingToast from "../LoadingToast";
 import { Pagination, Select } from "antd";
 import { numberOfRowFilter } from "@/lib/constaints";
 
-function StaticPost() {
+function StaticPost({ token }) {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
   const [action, setAction] = useState({
     loadingPosts: false,
+    refreshPost: false,
   });
   const [limit, setLimit] = useState(5);
 
@@ -32,7 +33,7 @@ function StaticPost() {
 
   useEffect(() => {
     fetchPosts();
-  }, [page, limit]);
+  }, [page, limit, action.refreshPost]);
   return (
     <div>
       <div className="felx mb-4">
@@ -59,7 +60,7 @@ function StaticPost() {
       )}
       {posts.map((post: PostWithUser) => (
         <div key={post.id} className="">
-          <PostItem {...post} />
+          <PostItem {...post} token setRefreshPost={setAction} />
         </div>
       ))}
 

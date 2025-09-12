@@ -18,7 +18,7 @@ export const showAlert = (options: AlertOptions) => {
     text: options.text,
     icon: options.icon || "info",
     showCancelButton: options.showCancelButton ?? true,
-    confirmButtonText: options.confirmButtonText || "OK",
+    confirmButtonText: options.confirmButtonText || "Có",
     cancelButtonText: options.cancelButtonText || "Hủy",
     confirmButtonColor: options.confirmButtonColor || "#3085d6",
     cancelButtonColor: options.cancelButtonColor || "#d33",
