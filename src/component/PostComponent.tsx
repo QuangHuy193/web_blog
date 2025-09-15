@@ -15,6 +15,7 @@ import { showAlert } from "@/lib/alert";
 import { reactionConfig } from "@/lib/reactionConfig";
 import CustomMenu from "./CustomMenu";
 import { fetchComments, fetchReactions } from "@/lib/function";
+import RequestUnlockPopup from "./RequestUnlockPopup";
 
 export default function PostComponent({
   id,
@@ -38,6 +39,7 @@ export default function PostComponent({
     showComments: false,
     sendComment: false,
     deleteComment: -1,
+    showPopupReason: false,
   });
   const user_local =
     typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -86,7 +88,7 @@ export default function PostComponent({
       }
       values.post_id = id;
       values.type = type;
-      const res = await fetch(`/api/reactions`, {
+      await fetch(`/api/reactions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -182,8 +184,8 @@ export default function PostComponent({
     }
   };
 
-  const handleSendRequestUnlock = (id) => {
-    console.log(`Yêu cầu mở khóa bài viết có id là ${id}`);
+  const handleSendRequestUnlock = () => {
+    setToggleAction((prev) => ({ ...prev, showPopupReason: true }));
   };
 
   //xóa bài viết
@@ -269,6 +271,15 @@ export default function PostComponent({
   return (
     <Card className="!mb-4 !shadow">
       <div className="flex justify-between">
+        {toggleAction.showPopupReason && (
+          <RequestUnlockPopup
+            post_id={id}
+            author_id={user.id}
+            token={token}
+            setToggleAction={setToggleAction}
+          />
+        )}
+
         <div className="w-full">
           {status === "blocked" && (
             <div className="flex justify-center text-yellow-300 italic text-xl mb-2.5">
@@ -303,46 +314,53 @@ export default function PostComponent({
             </div>
           )}
         </div>
+        <div className="h-fit">
+          {selectedMenu === "myPost" && status !== "blocked" && (
+            <CustomMenu
+              items={[
+                {
+                  label: "✏️ Sửa",
+                  action: () => handleEditPost(post),
+                },
+                {
+                  label: "🗑️ Xóa",
+                  action: () => handleDeletePost(id),
+                },
+              ]}
+              tippy_content="Tùy chỉnh"
+              position="top-end"
+              isClick={true}
+            />
+          )}
 
-        {selectedMenu === "myPost" && status !== "blocked" && (
-          <CustomMenu
-            items={[
-              {
-                label: "✏️ Sửa",
-                action: () => handleEditPost(post),
-              },
-              {
-                label: "🗑️ Xóa",
-                action: () => handleDeletePost(id),
-              },
-            ]}
-            isClick={true}
-          />
-        )}
+          {selectedMenu === "myPost" && status === "blocked" && (
+            <CustomMenu
+              items={[
+                {
+                  label: "🔓 Yêu cầu mở khóa",
+                  action: () => handleSendRequestUnlock(),
+                },
+              ]}
+              tippy_content="Tùy chỉnh"
+              position="top-end"
+              isClick={true}
+            />
+          )}
 
-        {selectedMenu === "myPost" && status === "blocked" && (
-          <CustomMenu
-            items={[
-              {
-                label: "🔓 Yêu cầu mở khóa",
-                action: () => handleSendRequestUnlock(id),
-              },
-            ]}
-            isClick={true}
-          />
-        )}
-
-        {selectedMenu === "deletedPost" && (
-          <CustomMenu
-            items={[
-              {
-                label: "↩️ Khôi phục",
-                action: () => handleRecoverPost(id),
-              },
-            ]}
-            isClick={true}
-          />
-        )}
+          {selectedMenu === "deletedPost" && (
+            <CustomMenu
+              items={[
+                {
+                  label: "↩️ Khôi phục",
+                  action: () => handleRecoverPost(id),
+                },
+              ]}
+              tippy_content="Tùy chỉnh"
+              position="top-end"
+              isClick={true}
+            />
+          )}
+        </div>
       </div>
 
       {/* Hiển thị reactions */}

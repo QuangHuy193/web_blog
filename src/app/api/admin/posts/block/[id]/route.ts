@@ -20,6 +20,11 @@ export async function PUT(
       [admin_id, author_id, reason, "post", id]
     );
 
+    await query(
+      `UPDATE users SET number_violation = number_violation + 1 WHERE id = ?`,
+      [author_id]
+    );
+
     return NextResponse.json<ApiResponse<null>>({
       success: true,
       message: "Đã khóa bài viết",

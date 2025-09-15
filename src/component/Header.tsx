@@ -6,6 +6,7 @@ import { Avatar, Button, Layout } from "antd";
 import { useEffect, useState } from "react";
 import MenuMobile from "./MenuMobile";
 import CustomMenu from "./CustomMenu";
+import Tippy from "@tippyjs/react";
 
 const { Header: AntHeader } = Layout;
 
@@ -93,13 +94,17 @@ export default function Header({ setSelectedMenu, user, setUserId, token }) {
 
         {/* Avatar + Username */}
         <div className="hidden md:flex items-center gap-3">
-          <Avatar src={user?.image} size={40} alt="Ảnh" />
-          <span
-            className="hidden sm:inline text-white text-lg font-medium cursor-pointer"
-            onClick={() => handleChangePage("profile")}
-          >
-            {user?.username}
-          </span>
+          <Tippy content="Ảnh đại diện">
+            <Avatar src={user?.image} size={40} alt="Ảnh" />
+          </Tippy>
+          <Tippy content="Tên người dùng">
+            <span
+              className="hidden sm:inline text-white text-lg font-medium cursor-pointer"
+              onClick={() => handleChangePage("profile")}
+            >
+              {user?.username}
+            </span>
+          </Tippy>
           {notifications ? (
             <CustomMenu
               items={notifications.map((noti) => ({

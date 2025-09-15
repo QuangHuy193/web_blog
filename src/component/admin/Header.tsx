@@ -1,6 +1,7 @@
 import { Layout, Typography, Avatar, Space } from "antd";
 import { useEffect, useState } from "react";
 import CustomMenu from "../CustomMenu";
+import Tippy from "@tippyjs/react";
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -58,10 +59,18 @@ export default function DashboardHeader({ onMenuClick }) {
 
       {/* Khu vực user info */}
       <Space>
-        <Avatar size="large" src={user?.image} />
-        <span className="cursor-pointer" onClick={() => onMenuClick("profile")}>
-          {user ? user.username : "admin"}
-        </span>
+        <Tippy content="Ảnh đại diện">
+          <Avatar size="large" src={user?.image} />
+        </Tippy>
+        <Tippy content="Tên người dùng">
+          <span
+            className="hidden sm:inline text-lg font-medium cursor-pointer"
+            onClick={() => onMenuClick("profile")}
+          >
+            {user ? user.username : "admin"}
+          </span>
+        </Tippy>
+
         {notifications && notifications.length > 0 ? (
           <CustomMenu
             items={notifications.map((noti) => ({

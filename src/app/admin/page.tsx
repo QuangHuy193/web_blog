@@ -6,6 +6,7 @@ import { Layout } from "antd";
 import Header from "@/component/admin/Header";
 import Sidebar from "@/component/admin/Sidebar";
 import { sidebarMenuItems } from "@/lib/sidebarConfig";
+import { CaretUpOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 
@@ -13,6 +14,20 @@ function AdminPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState("");
   const [menuKey, setMenuKey] = useState("posts");
+  const [showGoTop, setShowGoTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setShowGoTop(true);
+      } else {
+        setShowGoTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const token_local = localStorage.getItem("token");
@@ -20,6 +35,13 @@ function AdminPage() {
       setToken(token_local);
     }
   }, []);
+
+  const handleGoTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const renderContent = (token: string) => {
     const menu = sidebarMenuItems.find((item) => item.key === menuKey);
@@ -58,6 +80,14 @@ function AdminPage() {
           </Content>
         </Layout>
       </Layout>
+      {showGoTop && (
+        <div
+          className="cursor-pointer flex justify-center rounded-full w-10 h-10 bg-blue-400 fixed right-3 bottom-3"
+          onClick={handleGoTop}
+        >
+          <CaretUpOutlined className="text-3xl" />
+        </div>
+      )}
     </>
   );
 }

@@ -17,6 +17,8 @@ interface CustomMenuProps {
   triggerIcon?: React.ReactNode;
   isClick?: boolean;
   variant?: "default" | "notifi";
+  tippy_content?: string;
+  position?: string;
 }
 
 const CustomMenu: React.FC<CustomMenuProps> = ({
@@ -24,6 +26,8 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
   triggerIcon,
   isClick,
   variant = "default",
+  tippy_content = "Thông báo",
+  position = "bottom-end",
 }) => {
   const [activeMenu, setActiveMenu] = useState<MenuItem[] | null>(null);
 
@@ -66,13 +70,15 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
     <Tippy
       interactive
       trigger={isClick ? "click" : "mouseenter"}
-      placement="bottom-end"
+      placement={position}
       content={activeMenu ? renderMenu(activeMenu, true) : renderMenu(items)}
-      className="bg-white"
+      theme="customMenu"
     >
-      <span style={{ cursor: "pointer" }}>
-        {triggerIcon ?? <MoreOutlined style={{ fontSize: "22px" }} />}
-      </span>
+      <Tippy content={tippy_content}>
+        <span style={{ cursor: "pointer" }}>
+          {triggerIcon ?? <MoreOutlined style={{ fontSize: "22px" }} />}
+        </span>
+      </Tippy>
     </Tippy>
   );
 };

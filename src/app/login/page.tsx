@@ -33,10 +33,15 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       if (data.data.role === "user") {
         await router.push("/home");
+        setTimeout(() => {
+          notifySuccess("Đăng nhập thành công");
+        }, 500);
       } else if (data.data.role === "admin") {
         await router.push("/admin");
+        setTimeout(() => {
+          notifySuccess("Đăng nhập thành công");
+        }, 500);
       }
-      notifySuccess("Đăng nhập thành công");
     } catch (err) {
       notifyError("Lỗi server");
     } finally {

@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const offset = (page - 1) * limit;
 
     const users = await query<User[]>(
-      `SELECT id, username, email, image, role, status, created_at FROM users where role <> 'admin' ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`
+      `SELECT id, username, email, image, role, status, number_violation, created_at FROM users where role <> 'admin' ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`
     );
 
     return NextResponse.json<ApiResponse<typeof users>>({

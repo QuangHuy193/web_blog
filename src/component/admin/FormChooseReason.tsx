@@ -18,8 +18,7 @@ function FormChooseReason({ setAction, id, author_id, token, setRefreshPost }) {
       return;
     }
 
-    setAction((prve) => ({ ...prve, showFormReason: false }));
-    setAction((prve) => ({ ...prve, loadingBlockPost: true }));
+    setAction((prev) => ({ ...prev, loadingBlockPost: true }));
     const user = localStorage.getItem("user");
     if (user) {
       const admin_id = JSON.parse(user);
@@ -39,8 +38,9 @@ function FormChooseReason({ setAction, id, author_id, token, setRefreshPost }) {
           setRefreshPost((prev) => ({
             ...prev,
             refreshPost: !prev.refreshPost,
+            showFormReason: false,
+            loadingBlockPost: false,
           }));
-          setAction((prve) => ({ ...prve, loadingBlockPost: false }));
         } else {
           notifyError("Không thể khóa bài viết!");
         }
@@ -52,7 +52,18 @@ function FormChooseReason({ setAction, id, author_id, token, setRefreshPost }) {
   };
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center">
-      <div className="flex-col bg-white rounded-lg shadow-lg p-6 w-96">
+      <div className="relative flex-col bg-white rounded-lg shadow-lg p-6 w-96">
+        <span
+          className="absolute top-0 right-0 p-2 cursor-pointer"
+          onClick={() =>
+            setAction((prev) => ({
+              ...prev,
+              showFormReason: false,
+            }))
+          }
+        >
+          ❌
+        </span>
         <h2 className="text-lg font-semibold mb-4">Chọn lý do chặn</h2>
 
         <div className="space-y-2 mb-4">

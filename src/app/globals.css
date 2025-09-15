@@ -29,15 +29,15 @@ body {
   @apply border rounded-lg px-3 py-2 w-full;
 }
 
-.tippy-box {
-  background: white !important;
+.tippy-box[data-theme~="customMenu"] {
+  background-color: #fff; /* nền menu */
 }
 
-.tippy-content {
-  background: white !important;
-  border-radius: 8px !important;
+.tippy-content[data-theme~="customMenu"] {
+  background: white;
+  border-radius: 8px;
 }
 
-.tippy-arrow {
-  color: white !important;
+.tippy-box[data-theme~="customMenu"] > .tippy-arrow {
+  color: #fff;
 }
