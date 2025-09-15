@@ -73,6 +73,10 @@ export default function PostComponent({
 
   // xử lý reaction
   const handleReaction = async (type: string) => {
+    if (status === "blocked") {
+      return;
+    }
+
     try {
       let values: any = {};
       const user_local = localStorage.getItem("user");
@@ -399,7 +403,7 @@ export default function PostComponent({
           {comments.length === 0 && (
             <p className="text-gray-500">Chưa có bình luận nào.</p>
           )}
-          {selectedMenu !== "deletedPost" && (
+          {selectedMenu !== "deletedPost" && status !== "blocked" && (
             <Form
               form={form}
               className="mt-3 flex items-center gap-2"

@@ -1,16 +1,44 @@
 import { Layout, Typography, Avatar, Space } from "antd";
-import { UserOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import CustomMenu from "../CustomMenu";
 
 const { Header } = Layout;
 const { Title } = Typography;
 
 export default function DashboardHeader({ onMenuClick }) {
   const [user, setUser] = useState("");
+  const [token, setToken] = useState();
+  const [notifications, setNotifications] = useState([]);
+
+  const fetchNotification = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const res = await fetch(`/api/notifications/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNotifications(data.data);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (localStorage.getItem("user")) {
       setUser(JSON.parse(localStorage.getItem("user")));
     }
+
+    if (localStorage.getItem("token")) {
+      setToken(localStorage.getItem("token"));
+    }
+
+    fetchNotification();
   }, []);
   return (
     <Header
@@ -25,7 +53,7 @@ export default function DashboardHeader({ onMenuClick }) {
     >
       {/* Logo + tiêu đề */}
       <Title level={4} style={{ margin: 0 }}>
-        📊 Dashboard
+        📊 Trang quản trị
       </Title>
 
       {/* Khu vực user info */}
@@ -34,6 +62,34 @@ export default function DashboardHeader({ onMenuClick }) {
         <span className="cursor-pointer" onClick={() => onMenuClick("profile")}>
           {user ? user.username : "admin"}
         </span>
+        {notifications && notifications.length > 0 ? (
+          <CustomMenu
+            items={notifications.map((noti) => ({
+              label: noti.content,
+              status: noti.status,
+              action: () => hanlleNotification(noti.id),
+            }))}
+            variant="notifi"
+            triggerIcon={
+              <div className="relative">
+                <div className=" text-2xl">🔔</div>
+                {notifications.some((noti) => noti.status === "new") && (
+                  <span className="text-red-500 absolute bottom-0 right-0">
+                    ●
+                  </span>
+                )}
+              </div>
+            }
+            isClick={true}
+          />
+        ) : (
+          <CustomMenu
+            items={[{ label: "Bạn không có thông báo nào", status: "seen" }]}
+            variant="notifi"
+            triggerIcon={<div className="text-2xl">🔔</div>}
+            isClick={true}
+          />
+        )}
       </Space>
     </Header>
   );

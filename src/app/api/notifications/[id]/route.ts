@@ -11,7 +11,8 @@ export async function GET(
     const { id } = await params;
 
     const notification = await query<Notification[]>(
-      `SELECT * FROM notification ORDER BY created_at DESC`
+      `SELECT * FROM notification WHERE	recipient_id = ?  ORDER BY created_at DESC`,
+      [id]
     );
 
     return NextResponse.json<ApiResponse<typeof notification>>({

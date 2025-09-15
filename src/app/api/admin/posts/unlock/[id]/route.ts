@@ -10,10 +10,9 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
     const { author_id, admin_id } = body;
-    let { reason } = body;
-    reason = `1 bài biết của bạn vừa bị khóa vì lý do ${reason}`;
+    const reason = `1 bài biết của bạn vừa được mở khóa`;
 
-    await query(`UPDATE posts SET status = 'blocked' where id = ?`, [id]);
+    await query(`UPDATE posts SET status = 'active' where id = ?`, [id]);
 
     await query(
       `INSERT INTO notification (sender_id, recipient_id, content, type, post_id) values (?,?,?,?,?)`,
@@ -22,7 +21,7 @@ export async function PUT(
 
     return NextResponse.json<ApiResponse<null>>({
       success: true,
-      message: "Đã khóa bài viết",
+      message: "Đã mở khóa bài viết",
     });
   } catch (error: unknown) {
     let message = "Lỗi server";

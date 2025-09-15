@@ -4,6 +4,7 @@ import { Card, Avatar, Image } from "antd";
 import { fetchComments, fetchReactions } from "@/lib/function";
 import { showAlert } from "@/lib/alert";
 import FormChooseReason from "./FormChooseReason";
+import { notifyError, notifySuccess } from "../Toast";
 
 function PostItem({
   id,
@@ -21,6 +22,7 @@ function PostItem({
   const [action, setAction] = useState({
     showFormReason: false,
     loadingBlockPost: false,
+    loadingUnlockPost: false,
   });
 
   useEffect(() => {
@@ -28,7 +30,7 @@ function PostItem({
     fetchReactions(id, setReactions);
   }, [id]);
 
-  const handleBlockPost = async (id) => {
+  const handleBlockPost = async () => {
     const alert = await showAlert({
       text: "Bạn chắc chắn muốn khóa bài viết này?",
       icon: "warning",
@@ -37,6 +39,47 @@ function PostItem({
 
     if (alert.isConfirmed) {
       setAction((prev) => ({ ...prev, showFormReason: true }));
+    }
+  };
+
+  const handleUnlockPost = async (id: string) => {
+    const alert = await showAlert({
+      text: "Bạn chắc chắn muốn mở khóa bài viết này?",
+      icon: "warning",
+      confirmButtonText: "Có",
+    });
+
+    if (alert.isConfirmed) {
+      setAction((prev) => ({ ...prev, loadingUnlockPost: true }));
+      const user_admin = localStorage.getItem("user");
+      if (user_admin) {
+        const admin_id = JSON.parse(user_admin);
+        const author_id = user.id;
+        try {
+          const res = await fetch(`/api/admin/posts/unlock/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ author_id, admin_id }),
+          });
+
+          const result = await res.json();
+
+          if (result.success) {
+            notifySuccess("Đã mở khóa bài viết");
+            setRefreshPost((prev) => ({
+              ...prev,
+              refreshPost: !prev.refreshPost,
+            }));
+          }
+        } catch (error) {
+          notifyError("Đã xảy ra lỗi, vui lòng thử lại");
+        } finally {
+          setAction((prev) => ({ ...prev, loadingUnlockPost: false }));
+        }
+      }
     }
   };
 
@@ -98,15 +141,16 @@ function PostItem({
 
         <div className="flex flex-col gap-3 p-4 ">
           {status === "blocked" && (
-            <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer">
-              🔓 Mở khóa
+            <button
+              onClick={() => handleUnlockPost(id)}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer"
+            >
+              {action.loadingUnlockPost ? "Đang mở khóa..." : "🔓 Mở khóa"}
             </button>
           )}
           {status === "active" && (
             <button
-              onClick={() => {
-                handleBlockPost(id);
-              }}
+              onClick={handleBlockPost}
               className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition cursor-pointer"
             >
               {action.loadingBlockPost ? "Đang khóa..." : " 🔒 Khóa "}
