@@ -1,3 +1,5 @@
+import { useCallback, useRef } from "react";
+
 export function checkLogin() {
   const user = localStorage.getItem("user");
   if (user) return JSON.parse(user);
@@ -23,3 +25,24 @@ export const fetchReactions = async (id, setReactions) => {
     console.error("Lỗi tải reactions:", err);
   }
 };
+
+export function useThrottle(fn, delay, setDisabledRefresh) {
+  const lastCall = useRef(0);
+
+  return useCallback(
+    (...args) => {
+      const now = Date.now();
+      if (now - lastCall.current >= delay) {
+        lastCall.current = now;
+        setDisabledRefresh(true);
+        fn(...args);
+
+        // mở khóa sau khi hết delay
+        setTimeout(() => {
+          setDisabledRefresh(false);
+        }, delay);
+      }
+    },
+    [fn, delay]
+  );
+}

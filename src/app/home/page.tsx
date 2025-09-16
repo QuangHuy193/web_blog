@@ -11,6 +11,7 @@ const { Content } = Layout;
 export default function HomePage() {
   const [selectedMenu, setSelectedMenu] = useState("posts");
   const [editingPost, setEditingPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState("");
   const [user, setUser] = useState("");
   const [token, setToken] = useState("");
   const [userId, setUserId] = useState("");
@@ -59,6 +60,7 @@ export default function HomePage() {
           user={user}
           setUserId={setUserId}
           token={token}
+          setSelectedPost={setSelectedPost}
         />
       )}
 
@@ -73,6 +75,7 @@ export default function HomePage() {
             selectedMenu: selectedMenu,
             setEditingPost: setEditingPost,
             token: token,
+            selectedPost: selectedPost,
           })}
       </Content>
       {showGoTop && (

@@ -7,13 +7,21 @@ import { useEffect, useState } from "react";
 import MenuMobile from "./MenuMobile";
 import CustomMenu from "./CustomMenu";
 import Tippy from "@tippyjs/react";
+import { notifySuccess } from "./Toast";
 
 const { Header: AntHeader } = Layout;
 
-export default function Header({ setSelectedMenu, user, setUserId, token }) {
+export default function Header({
+  setSelectedMenu,
+  user,
+  setUserId,
+  token,
+  setSelectedPost,
+}) {
   const [notifications, setNotifications] = useState([]);
   const [action, setAction] = useState({
     showMenuMobile: false,
+    refreshNotification: true,
   });
 
   const fetchNotification = async () => {
@@ -37,10 +45,23 @@ export default function Header({ setSelectedMenu, user, setUserId, token }) {
 
   useEffect(() => {
     fetchNotification();
-  }, []);
+  }, [action.refreshNotification]);
 
-  const hanlleNotification = (id) => {
-    console.log("đã xem thông báo có id là ", id);
+  const hanlleNotification = (noti) => {
+    console.log(noti.post_id);
+    if (noti.type === "post") {
+      setUserId(user.id);
+      setSelectedMenu("myPost");
+      setSelectedPost(noti.post_id);
+    }
+  };
+
+  const handleRefresh = () => {
+    notifySuccess("Đã làm mới thông báo");
+    setAction((prev) => ({
+      ...prev,
+      refreshNotification: !prev.refreshNotification,
+    }));
   };
 
   const handleChangePage = (menu: string, isClose: boolean = false) => {
@@ -110,7 +131,7 @@ export default function Header({ setSelectedMenu, user, setUserId, token }) {
               items={notifications.map((noti) => ({
                 label: noti.content,
                 status: noti.status,
-                action: () => hanlleNotification(noti.id),
+                action: () => hanlleNotification(noti),
               }))}
               variant="notifi"
               triggerIcon={
@@ -123,6 +144,7 @@ export default function Header({ setSelectedMenu, user, setUserId, token }) {
                   )}
                 </div>
               }
+              handleRefresh={handleRefresh}
               isClick={true}
             />
           ) : (

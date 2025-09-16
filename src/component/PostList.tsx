@@ -12,6 +12,7 @@ export default function PostList({
   selectedMenu,
   setSelectedMenu,
   setEditingPost,
+  selectedPost,
 }) {
   const [posts, setPosts] = useState<PostWithUser[]>([]);
   const [action, setAction] = useState({
@@ -99,6 +100,15 @@ export default function PostList({
   }
 
   useEffect(() => {
+    if (selectedPost) {
+      const el = document.getElementById(selectedPost);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [selectedPost]);
+
+  useEffect(() => {
     fetchPosts(1);
   }, [userId, action.fetchAgainPosts, selectedMenu]);
 
@@ -113,15 +123,24 @@ export default function PostList({
       )}
       {action.loadingPosts && <LoadingToast title="Đang tải bài viết..." />}
       {posts.map((post) => (
-        <PostComponent
+        <div
           key={post.id}
-          {...post}
-          setAction={setAction}
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          setEditingPost={setEditingPost}
-          token={token}
-        />
+          id={post.id}
+          className={`transition-all duration-500 ${
+            selectedPost == post.id
+              ? "ring-2 ring-blue-500 rounded-md bg-blue-50"
+              : ""
+          }`}
+        >
+          <PostComponent
+            {...post}
+            setAction={setAction}
+            selectedMenu={selectedMenu}
+            setSelectedMenu={setSelectedMenu}
+            setEditingPost={setEditingPost}
+            token={token}
+          />
+        </div>
       ))}
       <div className="flex justify-center">
         {!action.loadingPosts && hasMore && (

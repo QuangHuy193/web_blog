@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import { MoreOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { useThrottle } from "@/lib/function";
 
 interface MenuItem {
   label: string;
@@ -19,6 +20,7 @@ interface CustomMenuProps {
   variant?: "default" | "notifi";
   tippy_content?: string;
   position?: string;
+  handleRefresh?: () => void;
 }
 
 const CustomMenu: React.FC<CustomMenuProps> = ({
@@ -28,11 +30,25 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
   variant = "default",
   tippy_content = "Thông báo",
   position = "bottom-end",
+  handleRefresh = () => {},
 }) => {
   const [activeMenu, setActiveMenu] = useState<MenuItem[] | null>(null);
+  const [disabledRefresh, setDisabledRefresh] = useState(false);
+
+  const handleRefreshNoti = useThrottle(
+    () => {
+      handleRefresh();
+    },
+    5000,
+    setDisabledRefresh
+  );
 
   const renderMenu = (menuItems: MenuItem[], isSubmenu = false) => (
-    <div className={`flex flex-col gap-2 p-3 rounded-lg min-w-[200px]  `}>
+    <div
+      className={`flex flex-col gap-2 p-3 rounded-lg min-w-[200px] ${
+        variant === "notifi" && "max-h-[500px] overflow-y-scroll"
+      } `}
+    >
       {isSubmenu && (
         <button
           onClick={() => setActiveMenu(null)}
@@ -63,6 +79,33 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
           </button>
         );
       })}
+
+      {variant === "notifi" && items.length > 0 && (
+        <div className="flex gap-2">
+          <button className="flex-1 bg-gray-400 rounded p-2 cursor-pointer">
+            Xem thông báo trước đó
+          </button>
+          <Tippy
+            content={
+              disabledRefresh
+                ? "Vui lòng chờ 5s để làm mới lại"
+                : "Làm mới thông báo"
+            }
+            placement="bottom-end"
+          >
+            <button
+              className={`text-xl ${
+                disabledRefresh
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+              onClick={handleRefreshNoti}
+            >
+              🔄
+            </button>
+          </Tippy>
+        </div>
+      )}
     </div>
   );
 

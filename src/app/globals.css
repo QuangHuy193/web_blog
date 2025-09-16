@@ -30,14 +30,15 @@ body {
 }
 
 .tippy-box[data-theme~="customMenu"] {
-  background-color: #fff; /* nền menu */
+  background-color: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .tippy-content[data-theme~="customMenu"] {
-  background: white;
+  background: #f9fafb;
   border-radius: 8px;
 }
 
 .tippy-box[data-theme~="customMenu"] > .tippy-arrow {
-  color: #fff;
+  color: #f9fafb;
 }

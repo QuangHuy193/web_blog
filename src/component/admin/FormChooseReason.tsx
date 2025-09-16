@@ -38,6 +38,9 @@ function FormChooseReason({ setAction, id, author_id, token, setRefreshPost }) {
           setRefreshPost((prev) => ({
             ...prev,
             refreshPost: !prev.refreshPost,
+          }));
+          setAction((prev) => ({
+            ...prev,
             showFormReason: false,
             loadingBlockPost: false,
           }));
