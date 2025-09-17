@@ -16,10 +16,9 @@ export interface Post {
   content: string;
   author_id: number;
   image?: string;
+  status: "active" | "deleted" | "blocked";
   created_at: string;
   updated_at?: string;
-  deleted: boolean;
-  hidden: boolean;
 }
 
 // Comment
@@ -45,8 +44,10 @@ export interface Notification {
   id: number;
   sender_id: number;
   recipient_id: number;
+  post_id: string;
   content: string;
-  status: string;
+  type: "post" | "user";
+  status: "new" | "seen" | "hidden" | "delete";
   created_at: string;
 }
 

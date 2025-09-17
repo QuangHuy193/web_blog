@@ -9,7 +9,6 @@ export const sidebarMenuItems = [
     label: "Bài viết",
     component: StaticPost,
     display: true,
-    isLoading: true,
   },
   {
     key: "profile",
@@ -17,7 +16,6 @@ export const sidebarMenuItems = [
     label: "",
     component: Profile,
     display: false,
-    isLoading: true,
   },
   {
     key: "users",
@@ -25,6 +23,5 @@ export const sidebarMenuItems = [
     label: "Người dùng",
     component: StaticUser,
     display: true,
-    isLoading: true,
   },
 ];

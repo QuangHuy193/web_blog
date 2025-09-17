@@ -2,14 +2,18 @@ import { Layout, Typography, Avatar, Space } from "antd";
 import { useEffect, useState } from "react";
 import CustomMenu from "../CustomMenu";
 import Tippy from "@tippyjs/react";
+import { handleRefresh } from "@/lib/function";
 
 const { Header } = Layout;
 const { Title } = Typography;
 
-export default function DashboardHeader({ onMenuClick }) {
+export default function DashboardHeader({ onMenuClick, setSelectedPost }) {
   const [user, setUser] = useState("");
   const [token, setToken] = useState();
   const [notifications, setNotifications] = useState([]);
+  const [action, setAction] = useState({
+    refershNotification: false,
+  });
 
   const fetchNotification = async () => {
     try {
@@ -38,9 +42,29 @@ export default function DashboardHeader({ onMenuClick }) {
     if (localStorage.getItem("token")) {
       setToken(localStorage.getItem("token"));
     }
-
-    fetchNotification();
   }, []);
+
+  useEffect(() => {
+    fetchNotification();
+  }, [action.refreshNotification]);
+
+  const hanlleNotification = async (noti) => {
+    if (noti.type === "post") {
+      onMenuClick("posts");
+      console.log("setSelectedPost: ", noti.post_id);
+      setSelectedPost(noti.post_id);
+    }
+    if (noti.status === "new") {
+      try {
+        await fetch(`/api/admin/notifications/${noti.id}`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        handleRefresh(setAction);
+      } catch (error) {}
+    }
+  };
+
   return (
     <Header
       style={{
@@ -76,7 +100,7 @@ export default function DashboardHeader({ onMenuClick }) {
             items={notifications.map((noti) => ({
               label: noti.content,
               status: noti.status,
-              action: () => hanlleNotification(noti.id),
+              action: () => hanlleNotification(noti),
             }))}
             variant="notifi"
             triggerIcon={
@@ -89,6 +113,7 @@ export default function DashboardHeader({ onMenuClick }) {
                 )}
               </div>
             }
+            handleRefresh={() => handleRefresh(setAction)}
             isClick={true}
           />
         ) : (

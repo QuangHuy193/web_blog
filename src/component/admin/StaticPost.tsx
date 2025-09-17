@@ -5,7 +5,7 @@ import LoadingToast from "../LoadingToast";
 import { Pagination, Select } from "antd";
 import { numberOfRowFilter } from "@/lib/constaints";
 
-function StaticPost({ token }) {
+function StaticPost({ token, selectedPost }) {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
@@ -13,7 +13,7 @@ function StaticPost({ token }) {
     loadingPosts: false,
     refreshPost: false,
   });
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(numberOfRowFilter[0]);
 
   const fetchPosts = async () => {
     try {
@@ -34,13 +34,60 @@ function StaticPost({ token }) {
   useEffect(() => {
     fetchPosts();
   }, [page, limit, action.refreshPost]);
+
+  useEffect(() => {
+    if (!selectedPost) return;
+
+    let cancelled = false;
+
+    const findPost = async () => {
+      let currentPage = 1;
+      let found = false;
+
+      while (!found && !cancelled) {
+        const res = await fetch(
+          `/api/admin/posts?page=${currentPage}&limit=${limit}`
+        );
+        const data = await res.json();
+
+        if (!data.success || data.data.length === 0) break;
+
+        const target = data.data.find((p) => p.id === selectedPost);
+
+        if (target) {
+          setPosts(data.data);
+          setTotal(data.total);
+          setPage(currentPage);
+          found = true;
+
+          // cần delay 1 nhịp để DOM render xong
+          setTimeout(() => {
+            const el = document.getElementById(selectedPost);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }, 100);
+        } else {
+          currentPage++;
+          if (currentPage > Math.ceil(data.total / limit)) break; // hết trang
+        }
+      }
+    };
+
+    findPost();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedPost, limit]);
+
   return (
     <div>
       <div className="felx mb-4">
         <div>
           Số hàng{" "}
           <Select
-            defaultValue={5}
+            defaultValue={numberOfRowFilter[0]}
             className="min-w-20"
             onChange={(value) => {
               setLimit(value);
@@ -59,7 +106,15 @@ function StaticPost({ token }) {
         <LoadingToast title="Đang tải danh sách bài viết..." />
       )}
       {posts.map((post: PostWithUser) => (
-        <div key={post.id} className="">
+        <div
+          key={post.id}
+          id={post.id}
+          className={`transition-all duration-500 ${
+            selectedPost == post.id
+              ? "ring-2 ring-blue-500 rounded-md bg-blue-50"
+              : ""
+          }`}
+        >
           <PostItem {...post} token setRefreshPost={setAction} />
         </div>
       ))}

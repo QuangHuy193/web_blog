@@ -8,6 +8,7 @@ import MenuMobile from "./MenuMobile";
 import CustomMenu from "./CustomMenu";
 import Tippy from "@tippyjs/react";
 import { notifySuccess } from "./Toast";
+import { handleRefresh } from "@/lib/function";
 
 const { Header: AntHeader } = Layout;
 
@@ -47,21 +48,22 @@ export default function Header({
     fetchNotification();
   }, [action.refreshNotification]);
 
-  const hanlleNotification = (noti) => {
+  const hanlleNotification = async (noti) => {
     console.log(noti.post_id);
     if (noti.type === "post") {
       setUserId(user.id);
       setSelectedMenu("myPost");
       setSelectedPost(noti.post_id);
     }
-  };
-
-  const handleRefresh = () => {
-    notifySuccess("Đã làm mới thông báo");
-    setAction((prev) => ({
-      ...prev,
-      refreshNotification: !prev.refreshNotification,
-    }));
+    if (noti.status === "new") {
+      try {
+        await fetch(`/api/admin/notifications/${noti.id}`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        handleRefresh(setAction);
+      } catch (error) {}
+    }
   };
 
   const handleChangePage = (menu: string, isClose: boolean = false) => {
@@ -144,12 +146,11 @@ export default function Header({
                   )}
                 </div>
               }
-              handleRefresh={handleRefresh}
+              handleRefresh={() => handleRefresh(setAction)}
               isClick={true}
             />
           ) : (
             <CustomMenu
-              items={[{ label: "Bạn không có thông báo nào" }]}
               variant="notifi"
               triggerIcon={<div className="text-2xl">🔔</div>}
               isClick={true}

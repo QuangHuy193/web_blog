@@ -11,8 +11,8 @@ import { CaretUpOutlined } from "@ant-design/icons";
 const { Content } = Layout;
 
 function AdminPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState("");
+  const [selectedPost, setSelectedPost] = useState("");
   const [menuKey, setMenuKey] = useState("posts");
   const [showGoTop, setShowGoTop] = useState(false);
 
@@ -43,24 +43,23 @@ function AdminPage() {
     });
   };
 
-  const renderContent = (token: string) => {
+  const renderContent = (token: string, selectedPost: string) => {
     const menu = sidebarMenuItems.find((item) => item.key === menuKey);
     if (!menu) return <h1>404 - Không tìm thấy trang</h1>;
 
     const Component = menu.component;
 
-    if (menu.isLoading) {
-      return <Component setIsLoading={setIsLoading} token={token} />;
-    }
-
-    return <Component token={token} />;
+    return <Component token={token} selectedPost={selectedPost} />;
   };
 
   return (
     <>
       <Layout style={{ minHeight: "100vh" }}>
         <div className="fixed top-0 left-0 right-0 z-100">
-          <Header onMenuClick={(key) => setMenuKey(key)} />
+          <Header
+            onMenuClick={(key) => setMenuKey(key)}
+            setSelectedPost={setSelectedPost}
+          />
         </div>
 
         <div className="fixed top-[64px] left-0 bottom-0 w-[200px] z-99 bg-[#fff] shadow-[2px_0_8px_rgba(0,0,0,0.1)]">
@@ -76,7 +75,7 @@ function AdminPage() {
               minHeight: "100%",
             }}
           >
-            {renderContent(token)}
+            {renderContent(token, selectedPost)}
           </Content>
         </Layout>
       </Layout>

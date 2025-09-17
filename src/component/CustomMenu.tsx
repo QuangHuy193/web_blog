@@ -14,7 +14,7 @@ interface MenuItem {
 }
 
 interface CustomMenuProps {
-  items: MenuItem[];
+  items?: MenuItem[];
   triggerIcon?: React.ReactNode;
   isClick?: boolean;
   variant?: "default" | "notifi";
@@ -24,7 +24,7 @@ interface CustomMenuProps {
 }
 
 const CustomMenu: React.FC<CustomMenuProps> = ({
-  items,
+  items = [{ label: "Bạn không có thông báo nào" }],
   triggerIcon,
   isClick,
   variant = "default",
@@ -80,11 +80,16 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
         );
       })}
 
-      {variant === "notifi" && items.length > 0 && (
+      {variant === "notifi" && (
         <div className="flex gap-2">
-          <button className="flex-1 bg-gray-400 rounded p-2 cursor-pointer">
-            Xem thông báo trước đó
-          </button>
+          {Array.isArray(items) &&
+            items.length > 0 &&
+            items[0].label !== "Bạn không có thông báo nào" && (
+              <button className="flex-1 bg-gray-400 rounded p-2 cursor-pointer">
+                Xem thông báo trước đó
+              </button>
+            )}
+
           <Tippy
             content={
               disabledRefresh

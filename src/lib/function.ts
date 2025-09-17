@@ -1,3 +1,4 @@
+import { notifySuccess } from "@/component/Toast";
 import { useCallback, useRef } from "react";
 
 export function checkLogin() {
@@ -46,3 +47,11 @@ export function useThrottle(fn, delay, setDisabledRefresh) {
     [fn, delay]
   );
 }
+
+export const handleRefresh = (setAction) => {
+  notifySuccess("Đã làm mới thông báo");
+  setAction((prev) => ({
+    ...prev,
+    refreshNotification: !prev.refreshNotification,
+  }));
+};

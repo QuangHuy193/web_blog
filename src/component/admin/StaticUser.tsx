@@ -30,6 +30,7 @@ function StaticUser() {
   useEffect(() => {
     fetchUser();
   }, [page]);
+
   return (
     <div>
       {action.loadingUsers && (
