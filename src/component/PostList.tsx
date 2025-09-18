@@ -5,6 +5,7 @@ import PostComponent from "./PostComponent";
 import type { PostWithUser } from "@/lib/interface";
 import { Button } from "antd";
 import LoadingToast from "./LoadingToast";
+import { LIMIT } from "@/lib/constaints";
 
 export default function PostList({
   userId,
@@ -22,14 +23,13 @@ export default function PostList({
   });
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 8;
 
   async function fetchPosts(pageNumber: number) {
     try {
       setAction((prev) => ({ ...prev, loadingPosts: true }));
       if (selectedMenu === "posts") {
         const res = await fetch(
-          `/api/posts?page=${pageNumber}&limit=${limit}`,
+          `/api/posts?page=${pageNumber}&limit=${LIMIT}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -44,13 +44,13 @@ export default function PostList({
             setPosts((prev) => [...prev, ...data.data]);
           }
           // Nếu ít hơn limit thì coi như hết
-          if (data.data.length < limit) {
+          if (data.data.length < LIMIT) {
             setHasMore(false);
           }
         }
       } else if (selectedMenu === "deletedPost") {
         const res = await fetch(
-          `/api/posts/delete/${userId}?page=${pageNumber}&limit=${limit}`,
+          `/api/posts/delete/${userId}?page=${pageNumber}&limit=${LIMIT}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -65,13 +65,13 @@ export default function PostList({
             setPosts((prev) => [...prev, ...data.data]);
           }
           // Nếu ít hơn limit thì coi như hết
-          if (data.data.length < limit) {
+          if (data.data.length < LIMIT) {
             setHasMore(false);
           }
         }
       } else {
         const res = await fetch(
-          `/api/posts/${userId}?page=${pageNumber}&limit=${limit}`,
+          `/api/posts/${userId}?page=${pageNumber}&limit=${LIMIT}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ export default function PostList({
             setPosts((prev) => [...prev, ...data.data]);
           }
           // Nếu ít hơn limit thì coi như hết
-          if (data.data.length < limit) {
+          if (data.data.length < LIMIT) {
             setHasMore(false);
           }
         }

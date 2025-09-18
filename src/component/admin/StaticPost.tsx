@@ -115,7 +115,7 @@ function StaticPost({ token, selectedPost }) {
               : ""
           }`}
         >
-          <PostItem {...post} token setRefreshPost={setAction} />
+          <PostItem {...post} token={token} setRefreshPost={setAction} />
         </div>
       ))}
 

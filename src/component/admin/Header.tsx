@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import CustomMenu from "../CustomMenu";
 import Tippy from "@tippyjs/react";
 import { handleRefresh } from "@/lib/function";
+import { LIMIT } from "@/lib/constaints";
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -10,22 +11,38 @@ const { Title } = Typography;
 export default function DashboardHeader({ onMenuClick, setSelectedPost }) {
   const [user, setUser] = useState("");
   const [token, setToken] = useState();
+  const [page, setPage] = useState(1);
   const [notifications, setNotifications] = useState([]);
   const [action, setAction] = useState({
     refershNotification: false,
+    hasMore: true,
   });
 
-  const fetchNotification = async () => {
+  const fetchNotification = async (page, refresh) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const res = await fetch(`/api/notifications/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `/api/notifications/${user.id}?limit=${LIMIT}&page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = await res.json();
       if (data.success) {
-        setNotifications(data.data);
+        if (data.data.length < LIMIT) {
+          setAction((prev) => ({ ...prev, hasMore: false }));
+        }
+        if (page === 1) {
+          setNotifications(data.data);
+        } else {
+          if (refresh) {
+            setNotifications(data.data);
+          } else {
+            setNotifications((prev) => [...prev, ...data.data]);
+          }
+        }
       } else {
         console.log(data.message);
       }
@@ -45,7 +62,7 @@ export default function DashboardHeader({ onMenuClick, setSelectedPost }) {
   }, []);
 
   useEffect(() => {
-    fetchNotification();
+    fetchNotification(page, true);
   }, [action.refreshNotification]);
 
   const hanlleNotification = async (noti) => {
@@ -60,9 +77,15 @@ export default function DashboardHeader({ onMenuClick, setSelectedPost }) {
           method: "PUT",
           headers: { Authorization: `Bearer ${token}` },
         });
-        handleRefresh(setAction);
+        handleRefresh(setPage, setAction);
       } catch (error) {}
     }
+  };
+
+  const handleSeenPreNoti = async (page, setPage) => {
+    setAction((prev) => ({ ...prev, loadingNotification: true }));
+    fetchNotification(page + 1);
+    setPage((prev) => prev + 1);
   };
 
   return (
@@ -113,7 +136,8 @@ export default function DashboardHeader({ onMenuClick, setSelectedPost }) {
                 )}
               </div>
             }
-            handleRefresh={() => handleRefresh(setAction)}
+            handleSeenPreNoti={() => handleSeenPreNoti(page, setPage)}
+            handleRefresh={() => handleRefresh(setPage, setAction)}
             isClick={true}
           />
         ) : (

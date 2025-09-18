@@ -21,14 +21,14 @@ function FormChooseReason({ setAction, id, author_id, token, setRefreshPost }) {
     setAction((prev) => ({ ...prev, loadingBlockPost: true }));
     const user = localStorage.getItem("user");
     if (user) {
-      const admin_id = JSON.parse(user);
+      const admin = JSON.parse(user);
       try {
         const res = await fetch(`/api/admin/posts/block/${id}`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ author_id, admin_id, reason }),
+          body: JSON.stringify({ author_id, admin_id: admin.id, reason }),
         });
 
         const result = await res.json();

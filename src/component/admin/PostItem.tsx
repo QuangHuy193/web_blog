@@ -53,7 +53,7 @@ function PostItem({
       setAction((prev) => ({ ...prev, loadingUnlockPost: true }));
       const user_admin = localStorage.getItem("user");
       if (user_admin) {
-        const admin_id = JSON.parse(user_admin);
+        const admin = JSON.parse(user_admin);
         const author_id = user.id;
         try {
           const res = await fetch(`/api/admin/posts/unlock/${id}`, {
@@ -62,7 +62,7 @@ function PostItem({
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ author_id, admin_id }),
+            body: JSON.stringify({ author_id, admin_id: admin.id }),
           });
 
           const result = await res.json();
@@ -73,6 +73,8 @@ function PostItem({
               ...prev,
               refreshPost: !prev.refreshPost,
             }));
+          } else {
+            notifyError("Đã xảy ra lỗi, vui lòng thử lại");
           }
         } catch (error) {
           notifyError("Đã xảy ra lỗi, vui lòng thử lại");

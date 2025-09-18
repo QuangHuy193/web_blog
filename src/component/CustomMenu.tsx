@@ -20,7 +20,9 @@ interface CustomMenuProps {
   variant?: "default" | "notifi";
   tippy_content?: string;
   position?: string;
+  action: object;
   handleRefresh?: () => void;
+  handleSeenPreNoti?: () => void;
 }
 
 const CustomMenu: React.FC<CustomMenuProps> = ({
@@ -30,11 +32,12 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
   variant = "default",
   tippy_content = "Thông báo",
   position = "bottom-end",
+  action = { hasMore: true },
   handleRefresh = () => {},
+  handleSeenPreNoti = () => {},
 }) => {
   const [activeMenu, setActiveMenu] = useState<MenuItem[] | null>(null);
   const [disabledRefresh, setDisabledRefresh] = useState(false);
-
   const handleRefreshNoti = useThrottle(
     () => {
       handleRefresh();
@@ -81,12 +84,18 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
       })}
 
       {variant === "notifi" && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 justify-end">
           {Array.isArray(items) &&
             items.length > 0 &&
-            items[0].label !== "Bạn không có thông báo nào" && (
-              <button className="flex-1 bg-gray-400 rounded p-2 cursor-pointer">
-                Xem thông báo trước đó
+            items[0].label !== "Bạn không có thông báo nào" &&
+            action.hasMore && (
+              <button
+                onClick={handleSeenPreNoti}
+                className="flex-1 bg-gray-400 rounded p-2 cursor-pointer"
+              >
+                {action.loadingNotification
+                  ? "Đang tải thông báo..."
+                  : "Xem thông báo trước đó"}
               </button>
             )}
 

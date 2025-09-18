@@ -19,3 +19,5 @@ export const reasonUnblock = [
   { key: "educational", label: "Nội dung mang tính giáo dục, không có ý xấu" },
   { key: "permission", label: "Đã có sự đồng ý từ người liên quan" },
 ];
+
+export const LIMIT = 8;

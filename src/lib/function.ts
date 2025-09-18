@@ -48,10 +48,12 @@ export function useThrottle(fn, delay, setDisabledRefresh) {
   );
 }
 
-export const handleRefresh = (setAction) => {
+export const handleRefresh = (setPage, setAction) => {
   notifySuccess("Đã làm mới thông báo");
+  setPage(1);
   setAction((prev) => ({
     ...prev,
+    hasMore: true,
     refreshNotification: !prev.refreshNotification,
   }));
 };

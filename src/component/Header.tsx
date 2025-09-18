@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import MenuMobile from "./MenuMobile";
 import CustomMenu from "./CustomMenu";
 import Tippy from "@tippyjs/react";
-import { notifySuccess } from "./Toast";
 import { handleRefresh } from "@/lib/function";
+import { LIMIT } from "@/lib/constaints";
 
 const { Header: AntHeader } = Layout;
 
@@ -20,32 +20,50 @@ export default function Header({
   setSelectedPost,
 }) {
   const [notifications, setNotifications] = useState([]);
+  const [page, setPage] = useState(1);
   const [action, setAction] = useState({
     showMenuMobile: false,
     refreshNotification: true,
+    loadingNotification: false,
+    hasMore: true,
   });
 
-  const fetchNotification = async () => {
+  const fetchNotification = async (page, refresh = false) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const res = await fetch(`/api/notifications/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `/api/notifications/${user.id}?limit=${LIMIT}&page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = await res.json();
       if (data.success) {
-        setNotifications(data.data);
+        if (data.data.length < LIMIT) {
+          setAction((prev) => ({ ...prev, hasMore: false }));
+        }
+        if (page === 1) {
+          setNotifications(data.data);
+        } else {
+          if (refresh) {
+            setNotifications(data.data);
+          } else {
+            setNotifications((prev) => [...prev, ...data.data]);
+          }
+        }
       } else {
         console.log(data.message);
       }
+      setAction((prev) => ({ ...prev, loadingNotification: false }));
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchNotification();
+    fetchNotification(page, true);
   }, [action.refreshNotification]);
 
   const hanlleNotification = async (noti) => {
@@ -61,7 +79,7 @@ export default function Header({
           method: "PUT",
           headers: { Authorization: `Bearer ${token}` },
         });
-        handleRefresh(setAction);
+        handleRefresh(setPage, setAction);
       } catch (error) {}
     }
   };
@@ -84,6 +102,12 @@ export default function Header({
 
   const handleCloseMenuMobile = () => {
     setAction((prev) => ({ ...prev, showMenuMobile: false }));
+  };
+
+  const handleSeenPreNoti = async (page, setPage) => {
+    setAction((prev) => ({ ...prev, loadingNotification: true }));
+    fetchNotification(page + 1);
+    setPage((prev) => prev + 1);
   };
 
   return (
@@ -146,7 +170,9 @@ export default function Header({
                   )}
                 </div>
               }
-              handleRefresh={() => handleRefresh(setAction)}
+              action={action}
+              handleSeenPreNoti={() => handleSeenPreNoti(page, setPage)}
+              handleRefresh={() => handleRefresh(setPage, setAction)}
               isClick={true}
             />
           ) : (

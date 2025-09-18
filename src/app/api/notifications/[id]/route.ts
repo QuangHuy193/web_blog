@@ -9,9 +9,14 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(req.url);
+
+    const limit = parseInt(searchParams.get("limit") || "8", 10);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const offset = (page - 1) * limit;
 
     const notification = await query<Notification[]>(
-      `SELECT * FROM notification WHERE	recipient_id = ?  ORDER BY created_at DESC`,
+      `SELECT * FROM notification WHERE	recipient_id = ?  ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
       [id]
     );
 
